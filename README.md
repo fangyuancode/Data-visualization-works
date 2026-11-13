@@ -126,11 +126,10 @@ FontBaseProject/
 在 PowerShell 中进入项目目录：
 
 ```powershell
-Set-Location -LiteralPath 'E:\08-学习和开发项目\07-数据分析与可视化项目\前端项目\FontBaseProject'
 pnpm install --frozen-lockfile
 ```
 
-核对后端实际端口。当前 `.env.development` 将 `/api` 请求代理到 `http://localhost:9090`，而目录中 `src/main/resources/application.yml` 的端口为 **9091**，两处配置不一致。以实际运行的后端为准，可新建 `.env.development.local` 覆盖配置：
+
 
 ```dotenv
 VITE_API_URL=/
@@ -142,9 +141,7 @@ VITE_API_PROXY_URL=http://localhost:9091
 pnpm dev
 ```
 
-默认开发地址为 [http://localhost:3006](http://localhost:3006)，启动命令会自动打开浏览器。如果端口已被占用，以终端显示的实际地址为准。登录页为 [http://localhost:3006/#/auth/login](http://localhost:3006/#/auth/login)，大屏为 [http://localhost:3006/#/screen](http://localhost:3006/#/screen)。
 
-使用后端中实际存在的账号登录，或通过注册页创建账号。登录表单中的预填内容不代表数据库一定存在对应账号；注册默认角色 `3` 也需要与后端角色配置一致。
 
 首次启动 Vite 会生成 `.auto-import.json`、`src/types/import/auto-imports.d.ts` 和 `src/types/import/components.d.ts`。这些文件被 Git 忽略；全新检出时应先启动一次开发服务，再执行依赖这些声明的类型或规范检查。
 
