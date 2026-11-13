@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.base_project.mapper.WorldHappinessReportMapper">
+
+    <resultMap id="WorldHappinessReportMap" type="org.example.base_project.entity.WorldHappinessReport">
+        <id column="id" property="id"/>
+
+        <result column="year" property="year"/>
+        <result column="rank_in_year" property="rankInYear"/>
+        <result column="country" property="country"/>
+
+        <result column="happiness_score" property="happinessScore"/>
+        <result column="lower_whisker" property="lowerWhisker"/>
+        <result column="upper_whisker" property="upperWhisker"/>
+
+        <result column="explained_log_gdp_per_capita" property="explainedLogGdpPerCapita"/>
+        <result column="explained_social_support" property="explainedSocialSupport"/>
+        <result column="explained_healthy_life_expectancy" property="explainedHealthyLifeExpectancy"/>
+        <result column="explained_freedom" property="explainedFreedom"/>
+        <result column="explained_generosity" property="explainedGenerosity"/>
+        <result column="explained_corruption" property="explainedCorruption"/>
+        <result column="dystopia_plus_residual" property="dystopiaPlusResidual"/>
+
+        <result column="complete_data" property="completeData"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        `visualization_project`.`world_happiness_report`
+    </sql>
+
+    <sql id="CompleteCondition">
+        year IS NOT NULL
+        AND country IS NOT NULL
+        AND country != ''
+        AND rank_in_year IS NOT NULL
+        AND happiness_score IS NOT NULL
+        AND explained_log_gdp_per_capita IS NOT NULL
+        AND explained_social_support IS NOT NULL
+        AND explained_healthy_life_expectancy IS NOT NULL
+        AND explained_freedom IS NOT NULL
+        AND explained_generosity IS NOT NULL
+        AND explained_corruption IS NOT NULL
+        AND dystopia_plus_residual IS NOT NULL
+    </sql>
+
+    <sql id="BaseColumns">
+        id,
+        year,
+        rank_in_year,
+        country,
+        happiness_score,
+        lower_whisker,
+        upper_whisker,
+        explained_log_gdp_per_capita,
+        explained_social_support,
+        explained_healthy_life_expectancy,
+        explained_freedom,
+        explained_generosity,
+        explained_corruption,
+        dystopia_plus_residual,
+        CASE
+        WHEN
+        <include refid="CompleteCondition"/>
+        THEN TRUE
+        ELSE FALSE
+        END AS complete_data,
+        DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time
+    </sql>
+
+    <sql id="WhereSql">
+        <where>
+            <if test="year != null">
+                AND year = #{year}
+            </if>
+
+            <if test="country != null and country != ''">
+                AND country LIKE CONCAT('%', #{country}, '%')
+            </if>
+
+            <if test="rankMin != null">
+                AND rank_in_year &gt;= #{rankMin}
+            </if>
+
+            <if test="rankMax != null">
+                AND rank_in_year &lt;= #{rankMax}
+            </if>
+
+            <if test="scoreMin != null">
+                AND happiness_score &gt;= #{scoreMin}
+            </if>
+
+            <if test="scoreMax != null">
+                AND happiness_score &lt;= #{scoreMax}
+            </if>
+
+            <if test="completeOnly != null and completeOnly == true">
+                AND
+                <include refid="CompleteCondition"/>
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultMap="WorldHappinessReportMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ORDER BY year DESC, rank_in_year ASC, id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="long">
+        SELECT COUNT(1)
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectById" resultMap="WorldHappinessReportMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="org.example.base_project.entity.WorldHappinessReport" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="TableName"/>
+        (
+        year,
+        rank_in_year,
+        country,
+        happiness_score,
+        lower_whisker,
+        upper_whisker,
+        explained_log_gdp_per_capita,
+        explained_social_support,
+        explained_healthy_life_expectancy,
+        explained_freedom,
+        explained_generosity,
+        explained_corruption,
+        dystopia_plus_residual
+        )
+        VALUES
+        (
+        #{year},
+        #{rankInYear},
+        #{country},
+        #{happinessScore},
+        #{lowerWhisker},
+        #{upperWhisker},
+        #{explainedLogGdpPerCapita},
+        #{explainedSocialSupport},
+        #{explainedHealthyLifeExpectancy},
+        #{explainedFreedom},
+        #{explainedGenerosity},
+        #{explainedCorruption},
+        #{dystopiaPlusResidual}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.example.base_project.entity.WorldHappinessReport">
+        UPDATE
+        <include refid="TableName"/>
+        SET
+        year = #{year},
+        rank_in_year = #{rankInYear},
+        country = #{country},
+        happiness_score = #{happinessScore},
+        lower_whisker = #{lowerWhisker},
+        upper_whisker = #{upperWhisker},
+        explained_log_gdp_per_capita = #{explainedLogGdpPerCapita},
+        explained_social_support = #{explainedSocialSupport},
+        explained_healthy_life_expectancy = #{explainedHealthyLifeExpectancy},
+        explained_freedom = #{explainedFreedom},
+        explained_generosity = #{explainedGenerosity},
+        explained_corruption = #{explainedCorruption},
+        dystopia_plus_residual = #{dystopiaPlusResidual}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectYearOptions" resultType="java.lang.Integer">
+        SELECT DISTINCT year
+        FROM
+        <include refid="TableName"/>
+        WHERE year IS NOT NULL
+        ORDER BY year DESC
+    </select>
+
+    <select id="selectCountryOptions" resultType="string">
+        SELECT DISTINCT country
+        FROM
+        <include refid="TableName"/>
+        WHERE country IS NOT NULL AND country != ''
+        ORDER BY country ASC
+    </select>
+
+    <select id="selectAnalysisSummary" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT
+        COUNT(1) AS totalCount,
+        SUM(CASE WHEN
+        <include refid="CompleteCondition"/>
+        THEN 1 ELSE 0 END) AS completeCount,
+        ROUND(SUM(CASE WHEN
+        <include refid="CompleteCondition"/>
+        THEN 1 ELSE 0 END) * 100 / NULLIF(COUNT(1), 0), 2) AS completeRate,
+        ROUND(AVG(happiness_score), 3) AS avgScore,
+        ROUND(MAX(happiness_score), 3) AS maxScore,
+        ROUND(MIN(happiness_score), 3) AS minScore,
+        ROUND(AVG(rank_in_year), 2) AS avgRank,
+        ROUND(AVG(explained_log_gdp_per_capita), 3) AS avgGdp,
+        ROUND(AVG(explained_social_support), 3) AS avgSocialSupport,
+        ROUND(AVG(explained_healthy_life_expectancy), 3) AS avgHealthyLife,
+        ROUND(AVG(explained_freedom), 3) AS avgFreedom,
+        ROUND(AVG(explained_generosity), 3) AS avgGenerosity,
+        ROUND(AVG(explained_corruption), 3) AS avgCorruption,
+        ROUND(AVG(dystopia_plus_residual), 3) AS avgResidual
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectScoreSegmentStats" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT
+        segmentName,
+        COUNT(1) AS totalCount,
+        ROUND(COUNT(1) * 100 / NULLIF((SELECT COUNT(1) FROM (SELECT * FROM `visualization_project`.`world_happiness_report` <include refid="WhereSql"/>) total_t WHERE total_t.happiness_score IS NOT NULL), 0), 2) AS ratio,
+        ROUND(AVG(happiness_score), 3) AS avgScore,
+        ROUND(AVG(rank_in_year), 2) AS avgRank,
+        ROUND(AVG(explained_log_gdp_per_capita), 3) AS avgGdp,
+        ROUND(AVG(explained_social_support), 3) AS avgSocialSupport,
+        ROUND(AVG(explained_healthy_life_expectancy), 3) AS avgHealthyLife,
+        ROUND(AVG(explained_freedom), 3) AS avgFreedom,
+        ROUND(AVG(explained_generosity), 3) AS avgGenerosity,
+        ROUND(AVG(explained_corruption), 3) AS avgCorruption,
+        ROUND(AVG(dystopia_plus_residual), 3) AS avgResidual
+        FROM (
+        SELECT
+        t.*,
+        CASE
+        WHEN t.happiness_score &lt; 4 THEN '4分以下'
+        WHEN t.happiness_score &lt; 5 THEN '4-5分'
+        WHEN t.happiness_score &lt; 6 THEN '5-6分'
+        WHEN t.happiness_score &lt; 7 THEN '6-7分'
+        ELSE '7分及以上'
+        END AS segmentName,
+        CASE
+        WHEN t.happiness_score &lt; 4 THEN 1
+        WHEN t.happiness_score &lt; 5 THEN 2
+        WHEN t.happiness_score &lt; 6 THEN 3
+        WHEN t.happiness_score &lt; 7 THEN 4
+        ELSE 5
+        END AS sortNo
+        FROM (
+        SELECT * FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        WHERE t.happiness_score IS NOT NULL
+        ) s
+        GROUP BY segmentName, sortNo
+        ORDER BY sortNo ASC
+    </select>
+
+    <select id="selectRankSegmentStats" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT
+        segmentName,
+        COUNT(1) AS totalCount,
+        ROUND(AVG(happiness_score), 3) AS avgScore,
+        ROUND(AVG(explained_log_gdp_per_capita), 3) AS avgGdp,
+        ROUND(AVG(explained_social_support), 3) AS avgSocialSupport,
+        ROUND(AVG(explained_healthy_life_expectancy), 3) AS avgHealthyLife,
+        ROUND(AVG(explained_freedom), 3) AS avgFreedom,
+        ROUND(AVG(explained_generosity), 3) AS avgGenerosity,
+        ROUND(AVG(explained_corruption), 3) AS avgCorruption
+        FROM (
+        SELECT
+        t.*,
+        CASE
+        WHEN t.rank_in_year &lt;= 10 THEN 'TOP10'
+        WHEN t.rank_in_year &lt;= 30 THEN '11-30名'
+        WHEN t.rank_in_year &lt;= 60 THEN '31-60名'
+        WHEN t.rank_in_year &lt;= 100 THEN '61-100名'
+        ELSE '100名以后'
+        END AS segmentName,
+        CASE
+        WHEN t.rank_in_year &lt;= 10 THEN 1
+        WHEN t.rank_in_year &lt;= 30 THEN 2
+        WHEN t.rank_in_year &lt;= 60 THEN 3
+        WHEN t.rank_in_year &lt;= 100 THEN 4
+        ELSE 5
+        END AS sortNo
+        FROM (
+        SELECT * FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        WHERE t.rank_in_year IS NOT NULL AND t.happiness_score IS NOT NULL
+        ) s
+        GROUP BY segmentName, sortNo
+        ORDER BY sortNo ASC
+    </select>
+
+    <select id="selectYearTrend" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT
+        year AS yearName,
+        COUNT(1) AS totalCount,
+        ROUND(AVG(happiness_score), 3) AS avgScore,
+        ROUND(AVG(rank_in_year), 2) AS avgRank,
+        ROUND(AVG(explained_log_gdp_per_capita), 3) AS avgGdp,
+        ROUND(AVG(explained_social_support), 3) AS avgSocialSupport,
+        ROUND(AVG(explained_healthy_life_expectancy), 3) AS avgHealthyLife,
+        ROUND(AVG(explained_freedom), 3) AS avgFreedom
+        FROM (
+        SELECT * FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        WHERE year IS NOT NULL AND happiness_score IS NOT NULL
+        GROUP BY year
+        ORDER BY year ASC
+    </select>
+
+    <select id="selectFactorContribution" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT '人均GDP' AS factorName, ROUND(AVG(explained_log_gdp_per_capita), 3) AS avgValue, COUNT(explained_log_gdp_per_capita) AS validCount
+        FROM (SELECT * FROM <include refid="TableName"/> <include refid="WhereSql"/>) t
+        UNION ALL
+        SELECT '社会支持' AS factorName, ROUND(AVG(explained_social_support), 3) AS avgValue, COUNT(explained_social_support) AS validCount
+        FROM (SELECT * FROM <include refid="TableName"/> <include refid="WhereSql"/>) t
+        UNION ALL
+        SELECT '健康寿命' AS factorName, ROUND(AVG(explained_healthy_life_expectancy), 3) AS avgValue, COUNT(explained_healthy_life_expectancy) AS validCount
+        FROM (SELECT * FROM <include refid="TableName"/> <include refid="WhereSql"/>) t
+        UNION ALL
+        SELECT '自由度' AS factorName, ROUND(AVG(explained_freedom), 3) AS avgValue, COUNT(explained_freedom) AS validCount
+        FROM (SELECT * FROM <include refid="TableName"/> <include refid="WhereSql"/>) t
+        UNION ALL
+        SELECT '慷慨程度' AS factorName, ROUND(AVG(explained_generosity), 3) AS avgValue, COUNT(explained_generosity) AS validCount
+        FROM (SELECT * FROM <include refid="TableName"/> <include refid="WhereSql"/>) t
+        UNION ALL
+        SELECT '腐败感知' AS factorName, ROUND(AVG(explained_corruption), 3) AS avgValue, COUNT(explained_corruption) AS validCount
+        FROM (SELECT * FROM <include refid="TableName"/> <include refid="WhereSql"/>) t
+        UNION ALL
+        SELECT '残差项' AS factorName, ROUND(AVG(dystopia_plus_residual), 3) AS avgValue, COUNT(dystopia_plus_residual) AS validCount
+        FROM (SELECT * FROM <include refid="TableName"/> <include refid="WhereSql"/>) t
+    </select>
+
+    <select id="selectTopCountryRank" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT
+        country,
+        year,
+        rank_in_year AS rankInYear,
+        ROUND(happiness_score, 3) AS happinessScore,
+        ROUND(explained_log_gdp_per_capita, 3) AS gdp,
+        ROUND(explained_social_support, 3) AS socialSupport,
+        ROUND(explained_healthy_life_expectancy, 3) AS healthyLife,
+        ROUND(explained_freedom, 3) AS freedom
+        FROM (
+        SELECT * FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        WHERE happiness_score IS NOT NULL AND country IS NOT NULL AND country != ''
+        ORDER BY happiness_score DESC, rank_in_year ASC
+        LIMIT 15
+    </select>
+
+    <select id="selectCountryAverageRank" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT
+        country,
+        COUNT(1) AS totalCount,
+        MAX(year) AS latestYear,
+        ROUND(AVG(happiness_score), 3) AS avgScore,
+        ROUND(AVG(rank_in_year), 2) AS avgRank,
+        ROUND(AVG(explained_log_gdp_per_capita), 3) AS avgGdp,
+        ROUND(AVG(explained_social_support), 3) AS avgSocialSupport,
+        ROUND(AVG(explained_healthy_life_expectancy), 3) AS avgHealthyLife,
+        ROUND(AVG(explained_freedom), 3) AS avgFreedom
+        FROM (
+        SELECT * FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        WHERE happiness_score IS NOT NULL AND country IS NOT NULL AND country != ''
+        GROUP BY country
+        ORDER BY avgScore DESC, avgRank ASC
+        LIMIT 15
+    </select>
+
+    <select id="selectFactorRadarByScoreSegment" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT
+        segmentName,
+        COUNT(1) AS totalCount,
+        ROUND(AVG(happiness_score), 3) AS avgScore,
+        ROUND(AVG(explained_log_gdp_per_capita), 3) AS avgGdp,
+        ROUND(AVG(explained_social_support), 3) AS avgSocialSupport,
+        ROUND(AVG(explained_healthy_life_expectancy), 3) AS avgHealthyLife,
+        ROUND(AVG(explained_freedom), 3) AS avgFreedom,
+        ROUND(AVG(explained_generosity), 3) AS avgGenerosity,
+        ROUND(AVG(explained_corruption), 3) AS avgCorruption,
+        ROUND(AVG(dystopia_plus_residual), 3) AS avgResidual
+        FROM (
+        SELECT
+        t.*,
+        CASE
+        WHEN t.happiness_score &lt; 5 THEN '低幸福组'
+        WHEN t.happiness_score &lt; 6.5 THEN '中等幸福组'
+        ELSE '高幸福组'
+        END AS segmentName,
+        CASE
+        WHEN t.happiness_score &lt; 5 THEN 1
+        WHEN t.happiness_score &lt; 6.5 THEN 2
+        ELSE 3
+        END AS sortNo
+        FROM (
+        SELECT * FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        WHERE t.happiness_score IS NOT NULL
+        ) s
+        GROUP BY segmentName, sortNo
+        ORDER BY sortNo ASC
+    </select>
+
+    <select id="selectScoreFactorScatter" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT
+        country,
+        year,
+        rank_in_year AS rankInYear,
+        ROUND(happiness_score, 3) AS happinessScore,
+        ROUND(explained_log_gdp_per_capita, 3) AS gdp,
+        ROUND(explained_social_support, 3) AS socialSupport,
+        ROUND(explained_healthy_life_expectancy, 3) AS healthyLife,
+        ROUND(explained_freedom, 3) AS freedom,
+        ROUND(explained_generosity, 3) AS generosity,
+        ROUND(explained_corruption, 3) AS corruption
+        FROM (
+        SELECT * FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        WHERE happiness_score IS NOT NULL
+        ORDER BY year DESC, happiness_score DESC
+        LIMIT 300
+    </select>
+
+    <select id="selectYearScoreHeatmap" parameterType="org.example.base_project.entity.WorldHappinessReportQuery" resultType="map">
+        SELECT
+        yearName,
+        segmentName,
+        COUNT(1) AS totalCount
+        FROM (
+        SELECT
+        t.year AS yearName,
+        CASE
+        WHEN t.happiness_score &lt; 4 THEN '4分以下'
+        WHEN t.happiness_score &lt; 5 THEN '4-5分'
+        WHEN t.happiness_score &lt; 6 THEN '5-6分'
+        WHEN t.happiness_score &lt; 7 THEN '6-7分'
+        ELSE '7分及以上'
+        END AS segmentName,
+        CASE
+        WHEN t.happiness_score &lt; 4 THEN 1
+        WHEN t.happiness_score &lt; 5 THEN 2
+        WHEN t.happiness_score &lt; 6 THEN 3
+        WHEN t.happiness_score &lt; 7 THEN 4
+        ELSE 5
+        END AS sortNo
+        FROM (
+        SELECT * FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        WHERE t.year IS NOT NULL AND t.happiness_score IS NOT NULL
+        ) s
+        GROUP BY yearName, segmentName, sortNo
+        ORDER BY yearName ASC, sortNo ASC
+    </select>
+
+</mapper>

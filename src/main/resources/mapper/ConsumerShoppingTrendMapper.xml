@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.base_project.mapper.ConsumerShoppingTrendMapper">
+
+    <resultMap id="ConsumerShoppingTrendMap" type="org.example.base_project.entity.ConsumerShoppingTrend">
+        <id column="id" property="id"/>
+
+        <result column="age" property="age"/>
+        <result column="monthly_income" property="monthlyIncome"/>
+        <result column="daily_internet_hours" property="dailyInternetHours"/>
+        <result column="smartphone_usage_years" property="smartphoneUsageYears"/>
+        <result column="social_media_hours" property="socialMediaHours"/>
+
+        <result column="online_payment_trust_score" property="onlinePaymentTrustScore"/>
+        <result column="tech_savvy_score" property="techSavvyScore"/>
+
+        <result column="monthly_online_orders" property="monthlyOnlineOrders"/>
+        <result column="monthly_store_visits" property="monthlyStoreVisits"/>
+
+        <result column="avg_online_spend" property="avgOnlineSpend"/>
+        <result column="avg_store_spend" property="avgStoreSpend"/>
+
+        <result column="discount_sensitivity" property="discountSensitivity"/>
+        <result column="return_frequency" property="returnFrequency"/>
+        <result column="avg_delivery_days" property="avgDeliveryDays"/>
+        <result column="delivery_fee_sensitivity" property="deliveryFeeSensitivity"/>
+        <result column="free_return_importance" property="freeReturnImportance"/>
+        <result column="product_availability_online" property="productAvailabilityOnline"/>
+
+        <result column="impulse_buying_score" property="impulseBuyingScore"/>
+        <result column="need_touch_feel_score" property="needTouchFeelScore"/>
+        <result column="brand_loyalty_score" property="brandLoyaltyScore"/>
+        <result column="environmental_awareness" property="environmentalAwareness"/>
+        <result column="time_pressure_level" property="timePressureLevel"/>
+
+        <result column="gender" property="gender"/>
+        <result column="city_tier" property="cityTier"/>
+        <result column="shopping_preference" property="shoppingPreference"/>
+
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        `visualization_project`.`consumer_shopping_trends_2026`
+    </sql>
+
+    <sql id="BaseColumns">
+        id,
+        age,
+        monthly_income,
+        daily_internet_hours,
+        smartphone_usage_years,
+        social_media_hours,
+        online_payment_trust_score,
+        tech_savvy_score,
+        monthly_online_orders,
+        monthly_store_visits,
+        avg_online_spend,
+        avg_store_spend,
+        discount_sensitivity,
+        return_frequency,
+        avg_delivery_days,
+        delivery_fee_sensitivity,
+        free_return_importance,
+        product_availability_online,
+        impulse_buying_score,
+        need_touch_feel_score,
+        brand_loyalty_score,
+        environmental_awareness,
+        time_pressure_level,
+        gender,
+        city_tier,
+        shopping_preference,
+        create_time
+    </sql>
+
+    <sql id="WhereSql">
+        <where>
+            <if test="gender != null and gender != ''">
+                AND gender = #{gender}
+            </if>
+
+            <if test="cityTier != null and cityTier != ''">
+                AND city_tier = #{cityTier}
+            </if>
+
+            <if test="shoppingPreference != null and shoppingPreference != ''">
+                AND shopping_preference = #{shoppingPreference}
+            </if>
+
+            <if test="ageMin != null">
+                AND age &gt;= #{ageMin}
+            </if>
+
+            <if test="ageMax != null">
+                AND age &lt;= #{ageMax}
+            </if>
+
+            <if test="incomeMin != null">
+                AND monthly_income &gt;= #{incomeMin}
+            </if>
+
+            <if test="incomeMax != null">
+                AND monthly_income &lt;= #{incomeMax}
+            </if>
+
+            <if test="ordersMin != null">
+                AND monthly_online_orders &gt;= #{ordersMin}
+            </if>
+
+            <if test="ordersMax != null">
+                AND monthly_online_orders &lt;= #{ordersMax}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultMap="ConsumerShoppingTrendMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="long">
+        SELECT COUNT(1)
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectById" resultMap="ConsumerShoppingTrendMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="org.example.base_project.entity.ConsumerShoppingTrend" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="TableName"/>
+        (
+        age,
+        monthly_income,
+        daily_internet_hours,
+        smartphone_usage_years,
+        social_media_hours,
+        online_payment_trust_score,
+        tech_savvy_score,
+        monthly_online_orders,
+        monthly_store_visits,
+        avg_online_spend,
+        avg_store_spend,
+        discount_sensitivity,
+        return_frequency,
+        avg_delivery_days,
+        delivery_fee_sensitivity,
+        free_return_importance,
+        product_availability_online,
+        impulse_buying_score,
+        need_touch_feel_score,
+        brand_loyalty_score,
+        environmental_awareness,
+        time_pressure_level,
+        gender,
+        city_tier,
+        shopping_preference
+        )
+        VALUES
+        (
+        #{age},
+        #{monthlyIncome},
+        #{dailyInternetHours},
+        #{smartphoneUsageYears},
+        #{socialMediaHours},
+        #{onlinePaymentTrustScore},
+        #{techSavvyScore},
+        #{monthlyOnlineOrders},
+        #{monthlyStoreVisits},
+        #{avgOnlineSpend},
+        #{avgStoreSpend},
+        #{discountSensitivity},
+        #{returnFrequency},
+        #{avgDeliveryDays},
+        #{deliveryFeeSensitivity},
+        #{freeReturnImportance},
+        #{productAvailabilityOnline},
+        #{impulseBuyingScore},
+        #{needTouchFeelScore},
+        #{brandLoyaltyScore},
+        #{environmentalAwareness},
+        #{timePressureLevel},
+        #{gender},
+        #{cityTier},
+        #{shoppingPreference}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.example.base_project.entity.ConsumerShoppingTrend">
+        UPDATE
+        <include refid="TableName"/>
+        SET
+        age = #{age},
+        monthly_income = #{monthlyIncome},
+        daily_internet_hours = #{dailyInternetHours},
+        smartphone_usage_years = #{smartphoneUsageYears},
+        social_media_hours = #{socialMediaHours},
+        online_payment_trust_score = #{onlinePaymentTrustScore},
+        tech_savvy_score = #{techSavvyScore},
+        monthly_online_orders = #{monthlyOnlineOrders},
+        monthly_store_visits = #{monthlyStoreVisits},
+        avg_online_spend = #{avgOnlineSpend},
+        avg_store_spend = #{avgStoreSpend},
+        discount_sensitivity = #{discountSensitivity},
+        return_frequency = #{returnFrequency},
+        avg_delivery_days = #{avgDeliveryDays},
+        delivery_fee_sensitivity = #{deliveryFeeSensitivity},
+        free_return_importance = #{freeReturnImportance},
+        product_availability_online = #{productAvailabilityOnline},
+        impulse_buying_score = #{impulseBuyingScore},
+        need_touch_feel_score = #{needTouchFeelScore},
+        brand_loyalty_score = #{brandLoyaltyScore},
+        environmental_awareness = #{environmentalAwareness},
+        time_pressure_level = #{timePressureLevel},
+        gender = #{gender},
+        city_tier = #{cityTier},
+        shopping_preference = #{shoppingPreference}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectGenderOptions" resultType="string">
+        SELECT DISTINCT gender
+        FROM
+        <include refid="TableName"/>
+        WHERE gender IS NOT NULL AND gender != ''
+        ORDER BY gender ASC
+    </select>
+
+    <select id="selectCityTierOptions" resultType="string">
+        SELECT DISTINCT city_tier
+        FROM
+        <include refid="TableName"/>
+        WHERE city_tier IS NOT NULL AND city_tier != ''
+        ORDER BY city_tier ASC
+    </select>
+
+    <select id="selectShoppingPreferenceOptions" resultType="string">
+        SELECT DISTINCT shopping_preference
+        FROM
+        <include refid="TableName"/>
+        WHERE shopping_preference IS NOT NULL AND shopping_preference != ''
+        ORDER BY shopping_preference ASC
+    </select>
+
+
+    <select id="selectAnalysisSummary" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(age), 0), 1) AS avgAge,
+            ROUND(IFNULL(AVG(monthly_income), 0), 2) AS avgIncome,
+            ROUND(IFNULL(AVG(daily_internet_hours), 0), 2) AS avgDailyInternetHours,
+            ROUND(IFNULL(AVG(social_media_hours), 0), 2) AS avgSocialMediaHours,
+            ROUND(IFNULL(AVG(monthly_online_orders), 0), 2) AS avgOnlineOrders,
+            ROUND(IFNULL(AVG(monthly_store_visits), 0), 2) AS avgStoreVisits,
+            ROUND(IFNULL(AVG(avg_online_spend), 0), 2) AS avgOnlineSpend,
+            ROUND(IFNULL(AVG(avg_store_spend), 0), 2) AS avgStoreSpend,
+            ROUND(IFNULL(AVG(online_payment_trust_score), 0), 2) AS avgPaymentTrustScore,
+            ROUND(IFNULL(AVG(tech_savvy_score), 0), 2) AS avgTechSavvyScore,
+            ROUND(IFNULL(AVG(discount_sensitivity), 0), 2) AS avgDiscountSensitivity,
+            ROUND(IFNULL(AVG(brand_loyalty_score), 0), 2) AS avgBrandLoyaltyScore,
+            ROUND(IFNULL(AVG(environmental_awareness), 0), 2) AS avgEnvironmentalAwareness,
+            ROUND(IFNULL(AVG(time_pressure_level), 0), 2) AS avgTimePressureLevel,
+            ROUND(IFNULL(SUM(CASE WHEN shopping_preference IN ('Online', 'Both') THEN 1 ELSE 0 END) * 100 / NULLIF(COUNT(1), 0), 0), 2) AS onlinePreferenceRate,
+            ROUND(IFNULL(SUM(CASE WHEN shopping_preference = 'Offline' THEN 1 ELSE 0 END) * 100 / NULLIF(COUNT(1), 0), 0), 2) AS offlinePreferenceRate,
+            ROUND(IFNULL(SUM(CASE WHEN shopping_preference = 'Both' THEN 1 ELSE 0 END) * 100 / NULLIF(COUNT(1), 0), 0), 2) AS bothPreferenceRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectPreferenceDistribution" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(shopping_preference, ''), 'Unknown') AS name,
+            COUNT(1) AS value
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(shopping_preference, ''), 'Unknown')
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectGenderDistribution" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(gender, ''), 'Unknown') AS name,
+            COUNT(1) AS value
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(gender, ''), 'Unknown')
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectCityTierDistribution" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(city_tier, ''), 'Unknown') AS name,
+            COUNT(1) AS value
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(city_tier, ''), 'Unknown')
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectAgeSegmentPreference" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            CASE
+                WHEN age IS NULL THEN '未知'
+                WHEN age &lt; 20 THEN '20岁以下'
+                WHEN age BETWEEN 20 AND 29 THEN '20-29岁'
+                WHEN age BETWEEN 30 AND 39 THEN '30-39岁'
+                WHEN age BETWEEN 40 AND 49 THEN '40-49岁'
+                WHEN age BETWEEN 50 AND 59 THEN '50-59岁'
+                ELSE '60岁及以上'
+            END AS ageSegment,
+            COUNT(1) AS totalCount,
+            SUM(CASE WHEN shopping_preference = 'Online' THEN 1 ELSE 0 END) AS onlineCount,
+            SUM(CASE WHEN shopping_preference = 'Offline' THEN 1 ELSE 0 END) AS offlineCount,
+            SUM(CASE WHEN shopping_preference = 'Both' THEN 1 ELSE 0 END) AS bothCount,
+            ROUND(IFNULL(SUM(CASE WHEN shopping_preference IN ('Online', 'Both') THEN 1 ELSE 0 END) * 100 / NULLIF(COUNT(1), 0), 0), 2) AS onlineRate,
+            ROUND(IFNULL(AVG(monthly_income), 0), 2) AS avgIncome,
+            ROUND(IFNULL(AVG(monthly_online_orders), 0), 2) AS avgOnlineOrders,
+            ROUND(IFNULL(AVG(monthly_store_visits), 0), 2) AS avgStoreVisits
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY ageSegment
+        ORDER BY MIN(
+            CASE
+                WHEN age IS NULL THEN 99
+                WHEN age &lt; 20 THEN 1
+                WHEN age BETWEEN 20 AND 29 THEN 2
+                WHEN age BETWEEN 30 AND 39 THEN 3
+                WHEN age BETWEEN 40 AND 49 THEN 4
+                WHEN age BETWEEN 50 AND 59 THEN 5
+                ELSE 6
+            END
+        ) ASC
+    </select>
+
+    <select id="selectIncomeSegmentStats" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            CASE
+                WHEN monthly_income IS NULL THEN '未知'
+                WHEN monthly_income &lt; 5000 THEN '5000以下'
+                WHEN monthly_income &gt;= 5000 AND monthly_income &lt; 8000 THEN '5000-7999'
+                WHEN monthly_income &gt;= 8000 AND monthly_income &lt; 12000 THEN '8000-11999'
+                WHEN monthly_income &gt;= 12000 AND monthly_income &lt; 20000 THEN '12000-19999'
+                ELSE '20000及以上'
+            END AS incomeSegment,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(avg_online_spend), 0), 2) AS avgOnlineSpend,
+            ROUND(IFNULL(AVG(avg_store_spend), 0), 2) AS avgStoreSpend,
+            ROUND(IFNULL(AVG(monthly_online_orders), 0), 2) AS avgOnlineOrders,
+            ROUND(IFNULL(AVG(monthly_store_visits), 0), 2) AS avgStoreVisits,
+            ROUND(IFNULL(SUM(CASE WHEN shopping_preference IN ('Online', 'Both') THEN 1 ELSE 0 END) * 100 / NULLIF(COUNT(1), 0), 0), 2) AS onlineRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY incomeSegment
+        ORDER BY MIN(
+            CASE
+                WHEN monthly_income IS NULL THEN 99
+                WHEN monthly_income &lt; 5000 THEN 1
+                WHEN monthly_income &gt;= 5000 AND monthly_income &lt; 8000 THEN 2
+                WHEN monthly_income &gt;= 8000 AND monthly_income &lt; 12000 THEN 3
+                WHEN monthly_income &gt;= 12000 AND monthly_income &lt; 20000 THEN 4
+                ELSE 5
+            END
+        ) ASC
+    </select>
+
+    <select id="selectCityTierPreferenceStats" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(city_tier, ''), 'Unknown') AS cityTier,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(monthly_income), 0), 2) AS avgIncome,
+            ROUND(IFNULL(AVG(monthly_online_orders), 0), 2) AS avgOnlineOrders,
+            ROUND(IFNULL(AVG(monthly_store_visits), 0), 2) AS avgStoreVisits,
+            ROUND(IFNULL(AVG(avg_online_spend), 0), 2) AS avgOnlineSpend,
+            ROUND(IFNULL(AVG(avg_store_spend), 0), 2) AS avgStoreSpend,
+            ROUND(IFNULL(AVG(tech_savvy_score), 0), 2) AS avgTechSavvyScore,
+            ROUND(IFNULL(AVG(discount_sensitivity), 0), 2) AS avgDiscountSensitivity,
+            ROUND(IFNULL(AVG(online_payment_trust_score), 0), 2) AS avgPaymentTrustScore,
+            ROUND(IFNULL(SUM(CASE WHEN shopping_preference IN ('Online', 'Both') THEN 1 ELSE 0 END) * 100 / NULLIF(COUNT(1), 0), 0), 2) AS onlineRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(city_tier, ''), 'Unknown')
+        ORDER BY totalCount DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectRadarByPreference" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(shopping_preference, ''), 'Unknown') AS preference,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(online_payment_trust_score), 0), 2) AS onlinePaymentTrustScore,
+            ROUND(IFNULL(AVG(tech_savvy_score), 0), 2) AS techSavvyScore,
+            ROUND(IFNULL(AVG(discount_sensitivity), 0), 2) AS discountSensitivity,
+            ROUND(IFNULL(AVG(return_frequency), 0), 2) AS returnFrequency,
+            ROUND(IFNULL(AVG(delivery_fee_sensitivity), 0), 2) AS deliveryFeeSensitivity,
+            ROUND(IFNULL(AVG(free_return_importance), 0), 2) AS freeReturnImportance,
+            ROUND(IFNULL(AVG(product_availability_online), 0), 2) AS productAvailabilityOnline,
+            ROUND(IFNULL(AVG(impulse_buying_score), 0), 2) AS impulseBuyingScore,
+            ROUND(IFNULL(AVG(need_touch_feel_score), 0), 2) AS needTouchFeelScore,
+            ROUND(IFNULL(AVG(brand_loyalty_score), 0), 2) AS brandLoyaltyScore,
+            ROUND(IFNULL(AVG(environmental_awareness), 0), 2) AS environmentalAwareness,
+            ROUND(IFNULL(AVG(time_pressure_level), 0), 2) AS timePressureLevel,
+            ROUND(IFNULL(AVG(monthly_online_orders), 0), 2) AS avgOnlineOrders,
+            ROUND(IFNULL(AVG(monthly_store_visits), 0), 2) AS avgStoreVisits
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(shopping_preference, ''), 'Unknown')
+        ORDER BY totalCount DESC
+    </select>
+
+    <select id="selectDeliveryExperienceStats" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(shopping_preference, ''), 'Unknown') AS preference,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(avg_delivery_days), 0), 2) AS avgDeliveryDays,
+            ROUND(IFNULL(AVG(delivery_fee_sensitivity), 0), 2) AS deliveryFeeSensitivity,
+            ROUND(IFNULL(AVG(free_return_importance), 0), 2) AS freeReturnImportance,
+            ROUND(IFNULL(AVG(return_frequency), 0), 2) AS returnFrequency,
+            ROUND(IFNULL(AVG(product_availability_online), 0), 2) AS productAvailabilityOnline
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(shopping_preference, ''), 'Unknown')
+        ORDER BY totalCount DESC
+    </select>
+
+    <select id="selectTechOrderScatter" parameterType="org.example.base_project.entity.ConsumerShoppingTrendQuery" resultType="map">
+        SELECT
+            tech_savvy_score AS techSavvyScore,
+            monthly_online_orders AS monthlyOnlineOrders,
+            monthly_income AS monthlyIncome,
+            avg_online_spend AS avgOnlineSpend,
+            IFNULL(NULLIF(city_tier, ''), 'Unknown') AS cityTier,
+            IFNULL(NULLIF(shopping_preference, ''), 'Unknown') AS shoppingPreference
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ORDER BY id DESC
+        LIMIT 350
+    </select>
+
+</mapper>

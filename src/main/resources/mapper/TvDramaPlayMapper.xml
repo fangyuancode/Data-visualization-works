@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.base_project.mapper.TvDramaPlayMapper">
+
+    <resultMap id="TvDramaPlayDataMap" type="org.example.base_project.entity.TvDramaPlayData">
+        <id column="id" property="id"/>
+
+        <result column="drama_name" property="dramaName"/>
+        <result column="drama_type" property="dramaType"/>
+        <result column="play_count_text" property="playCountText"/>
+        <result column="play_count" property="playCount"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="negative_count" property="negativeCount"/>
+        <result column="score" property="score"/>
+        <result column="collect_time" property="collectTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        `visualization_project`.`tv_drama_play_data`
+    </sql>
+
+    <sql id="BaseColumns">
+        id,
+        drama_name,
+        drama_type,
+        play_count_text,
+        play_count,
+        like_count,
+        negative_count,
+        score,
+        DATE_FORMAT(collect_time, '%Y-%m-%d %H:%i:%s') AS collect_time,
+        DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time
+    </sql>
+
+    <sql id="WhereSql">
+        <where>
+            <if test="dramaName != null and dramaName != ''">
+                AND drama_name LIKE CONCAT('%', #{dramaName}, '%')
+            </if>
+
+            <if test="dramaType != null and dramaType != ''">
+                AND drama_type LIKE CONCAT('%', #{dramaType}, '%')
+            </if>
+
+            <if test="playCountMin != null">
+                AND play_count &gt;= #{playCountMin}
+            </if>
+
+            <if test="playCountMax != null">
+                AND play_count &lt;= #{playCountMax}
+            </if>
+
+            <if test="likeCountMin != null">
+                AND like_count &gt;= #{likeCountMin}
+            </if>
+
+            <if test="likeCountMax != null">
+                AND like_count &lt;= #{likeCountMax}
+            </if>
+
+            <if test="negativeCountMin != null">
+                AND negative_count &gt;= #{negativeCountMin}
+            </if>
+
+            <if test="negativeCountMax != null">
+                AND negative_count &lt;= #{negativeCountMax}
+            </if>
+
+            <if test="scoreMin != null">
+                AND score &gt;= #{scoreMin}
+            </if>
+
+            <if test="scoreMax != null">
+                AND score &lt;= #{scoreMax}
+            </if>
+
+            <if test="collectStartTime != null and collectStartTime != ''">
+                AND collect_time &gt;= #{collectStartTime}
+            </if>
+
+            <if test="collectEndTime != null and collectEndTime != ''">
+                AND collect_time &lt;= #{collectEndTime}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultMap="TvDramaPlayDataMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="long">
+        SELECT COUNT(1)
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectById" resultMap="TvDramaPlayDataMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="org.example.base_project.entity.TvDramaPlayData" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="TableName"/>
+        (
+        drama_name,
+        drama_type,
+        play_count_text,
+        play_count,
+        like_count,
+        negative_count,
+        score,
+        collect_time
+        )
+        VALUES
+        (
+        #{dramaName},
+        #{dramaType},
+        #{playCountText},
+        #{playCount},
+        #{likeCount},
+        #{negativeCount},
+        #{score},
+        #{collectTime}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.example.base_project.entity.TvDramaPlayData">
+        UPDATE
+        <include refid="TableName"/>
+        SET
+        drama_name = #{dramaName},
+        drama_type = #{dramaType},
+        play_count_text = #{playCountText},
+        play_count = #{playCount},
+        like_count = #{likeCount},
+        negative_count = #{negativeCount},
+        score = #{score},
+        collect_time = #{collectTime}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectDramaTypeOptions" resultType="string">
+        SELECT DISTINCT drama_type
+        FROM
+        <include refid="TableName"/>
+        WHERE drama_type IS NOT NULL AND drama_type != ''
+        ORDER BY drama_type ASC
+    </select>
+
+    <select id="selectAnalysisSummary" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        COUNT(1) AS totalCount,
+        COALESCE(SUM(play_count), 0) AS totalPlayCount,
+        ROUND(COALESCE(AVG(play_count), 0), 2) AS avgPlayCount,
+        COALESCE(MAX(play_count), 0) AS maxPlayCount,
+        ROUND(COALESCE(AVG(score), 0), 2) AS avgScore,
+        ROUND(COALESCE(AVG(like_count), 0), 2) AS avgLikeCount,
+        ROUND(COALESCE(AVG(negative_count), 0), 2) AS avgNegativeCount,
+        COALESCE(SUM(like_count), 0) AS totalLikeCount,
+        COALESCE(SUM(negative_count), 0) AS totalNegativeCount,
+        ROUND(COALESCE(SUM(like_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS positiveRate,
+        ROUND(COALESCE(SUM(CASE WHEN score &gt;= 8 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 0), 2) AS highScoreRate,
+        ROUND(COALESCE(SUM(CASE WHEN play_count &gt;= 100000000 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 0), 2) AS billionDramaRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectTypeDistribution" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        COALESCE(NULLIF(drama_type, ''), '未知类型') AS labelName,
+        COUNT(1) AS totalCount,
+        COALESCE(SUM(play_count), 0) AS totalPlayCount,
+        ROUND(COALESCE(AVG(play_count), 0), 2) AS avgPlayCount,
+        ROUND(COALESCE(AVG(score), 0), 2) AS avgScore,
+        ROUND(COALESCE(SUM(like_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS positiveRate,
+        ROUND(COALESCE(SUM(negative_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS negativeRate,
+        ROUND(COALESCE(COUNT(1) * 100.0 / NULLIF((SELECT COUNT(1) FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>), 0), 0), 2) AS ratio
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(drama_type, ''), '未知类型')
+        ORDER BY totalPlayCount DESC, totalCount DESC
+        LIMIT 20
+    </select>
+
+    <select id="selectScoreSegmentStats" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        segmentName,
+        COUNT(1) AS totalCount,
+        COALESCE(SUM(play_count), 0) AS totalPlayCount,
+        ROUND(COALESCE(AVG(play_count), 0), 2) AS avgPlayCount,
+        ROUND(COALESCE(AVG(score), 0), 2) AS avgScore,
+        ROUND(COALESCE(AVG(like_count), 0), 2) AS avgLikeCount,
+        ROUND(COALESCE(AVG(negative_count), 0), 2) AS avgNegativeCount,
+        ROUND(COALESCE(SUM(like_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS positiveRate,
+        ROUND(COALESCE(COUNT(1) * 100.0 / NULLIF((SELECT COUNT(1) FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>), 0), 0), 2) AS ratio
+        FROM (
+        SELECT
+        CASE
+        WHEN score IS NULL THEN '未知评分'
+        WHEN score &lt; 6 THEN '6分以下'
+        WHEN score &lt; 7 THEN '6-7分'
+        WHEN score &lt; 8 THEN '7-8分'
+        WHEN score &lt; 9 THEN '8-9分'
+        ELSE '9分及以上'
+        END AS segmentName,
+        CASE
+        WHEN score IS NULL THEN 99
+        WHEN score &lt; 6 THEN 1
+        WHEN score &lt; 7 THEN 2
+        WHEN score &lt; 8 THEN 3
+        WHEN score &lt; 9 THEN 4
+        ELSE 5
+        END AS sortNo,
+        play_count,
+        like_count,
+        negative_count,
+        score
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        GROUP BY segmentName, sortNo
+        ORDER BY sortNo ASC
+    </select>
+
+    <select id="selectPlaySegmentStats" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        segmentName,
+        COUNT(1) AS totalCount,
+        COALESCE(SUM(play_count), 0) AS totalPlayCount,
+        ROUND(COALESCE(AVG(play_count), 0), 2) AS avgPlayCount,
+        ROUND(COALESCE(AVG(score), 0), 2) AS avgScore,
+        ROUND(COALESCE(SUM(like_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS positiveRate,
+        ROUND(COALESCE(COUNT(1) * 100.0 / NULLIF((SELECT COUNT(1) FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>), 0), 0), 2) AS ratio
+        FROM (
+        SELECT
+        CASE
+        WHEN play_count IS NULL THEN '未知播放量'
+        WHEN play_count &lt; 10000000 THEN '1000万以下'
+        WHEN play_count &lt; 50000000 THEN '1000-5000万'
+        WHEN play_count &lt; 100000000 THEN '5000万-1亿'
+        WHEN play_count &lt; 500000000 THEN '1-5亿'
+        ELSE '5亿以上'
+        END AS segmentName,
+        CASE
+        WHEN play_count IS NULL THEN 99
+        WHEN play_count &lt; 10000000 THEN 1
+        WHEN play_count &lt; 50000000 THEN 2
+        WHEN play_count &lt; 100000000 THEN 3
+        WHEN play_count &lt; 500000000 THEN 4
+        ELSE 5
+        END AS sortNo,
+        play_count,
+        like_count,
+        negative_count,
+        score
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        GROUP BY segmentName, sortNo
+        ORDER BY sortNo ASC
+    </select>
+
+    <select id="selectMonthTrend" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        monthName,
+        COUNT(1) AS totalCount,
+        COALESCE(SUM(play_count), 0) AS totalPlayCount,
+        ROUND(COALESCE(AVG(play_count), 0), 2) AS avgPlayCount,
+        ROUND(COALESCE(AVG(score), 0), 2) AS avgScore,
+        ROUND(COALESCE(SUM(like_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS positiveRate
+        FROM (
+        SELECT
+        COALESCE(DATE_FORMAT(collect_time, '%Y-%m'), '未知月份') AS monthName,
+        collect_time,
+        play_count,
+        like_count,
+        negative_count,
+        score
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        GROUP BY monthName
+        ORDER BY MIN(collect_time) ASC
+    </select>
+
+    <select id="selectTypeRadarStats" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        COALESCE(NULLIF(drama_type, ''), '未知类型') AS labelName,
+        COUNT(1) AS totalCount,
+        COALESCE(SUM(play_count), 0) AS totalPlayCount,
+        ROUND(COALESCE(AVG(play_count), 0), 2) AS avgPlayCount,
+        ROUND(COALESCE(AVG(score), 0), 2) AS avgScore,
+        ROUND(COALESCE(AVG(like_count), 0), 2) AS avgLikeCount,
+        ROUND(COALESCE(AVG(negative_count), 0), 2) AS avgNegativeCount,
+        ROUND(COALESCE(SUM(like_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS positiveRate,
+        ROUND(COALESCE(SUM(negative_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS controversyRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(drama_type, ''), '未知类型')
+        HAVING COUNT(1) &gt; 0
+        ORDER BY totalPlayCount DESC, totalCount DESC
+        LIMIT 6
+    </select>
+
+    <select id="selectTopDramaRank" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        id,
+        drama_name AS dramaName,
+        COALESCE(NULLIF(drama_type, ''), '未知类型') AS dramaType,
+        COALESCE(play_count, 0) AS playCount,
+        COALESCE(like_count, 0) AS likeCount,
+        COALESCE(negative_count, 0) AS negativeCount,
+        ROUND(COALESCE(score, 0), 2) AS score,
+        ROUND(COALESCE(like_count * 100.0 / NULLIF(IFNULL(like_count, 0) + IFNULL(negative_count, 0), 0), 0), 2) AS positiveRate,
+        DATE_FORMAT(collect_time, '%Y-%m-%d %H:%i:%s') AS collectTime
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ORDER BY COALESCE(play_count, 0) DESC, COALESCE(score, 0) DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectScorePlayScatter" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        drama_name AS dramaName,
+        COALESCE(NULLIF(drama_type, ''), '未知类型') AS dramaType,
+        COALESCE(play_count, 0) AS playCount,
+        ROUND(COALESCE(score, 0), 2) AS score,
+        COALESCE(like_count, 0) AS likeCount,
+        COALESCE(negative_count, 0) AS negativeCount,
+        ROUND(COALESCE(like_count * 100.0 / NULLIF(IFNULL(like_count, 0) + IFNULL(negative_count, 0), 0), 0), 2) AS positiveRate
+        FROM (
+        SELECT *
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        WHERE play_count IS NOT NULL
+        AND score IS NOT NULL
+        ORDER BY COALESCE(play_count, 0) DESC
+        LIMIT 500
+    </select>
+
+    <select id="selectTypeScoreHeatmap" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        labelName,
+        scoreSegment,
+        COUNT(1) AS totalCount
+        FROM (
+        SELECT
+        COALESCE(NULLIF(drama_type, ''), '未知类型') AS labelName,
+        CASE
+        WHEN score IS NULL THEN '未知评分'
+        WHEN score &lt; 6 THEN '6分以下'
+        WHEN score &lt; 7 THEN '6-7分'
+        WHEN score &lt; 8 THEN '7-8分'
+        WHEN score &lt; 9 THEN '8-9分'
+        ELSE '9分及以上'
+        END AS scoreSegment
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        GROUP BY labelName, scoreSegment
+        ORDER BY totalCount DESC
+    </select>
+
+    <select id="selectInteractionByScoreSegment" parameterType="org.example.base_project.entity.TvDramaPlayQuery" resultType="map">
+        SELECT
+        segmentName,
+        COUNT(1) AS totalCount,
+        COALESCE(SUM(like_count), 0) AS totalLikeCount,
+        COALESCE(SUM(negative_count), 0) AS totalNegativeCount,
+        ROUND(COALESCE(AVG(like_count), 0), 2) AS avgLikeCount,
+        ROUND(COALESCE(AVG(negative_count), 0), 2) AS avgNegativeCount,
+        ROUND(COALESCE(SUM(like_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS positiveRate,
+        ROUND(COALESCE(SUM(negative_count) * 100.0 / NULLIF(SUM(IFNULL(like_count, 0) + IFNULL(negative_count, 0)), 0), 0), 2) AS negativeRate
+        FROM (
+        SELECT
+        CASE
+        WHEN score IS NULL THEN '未知评分'
+        WHEN score &lt; 6 THEN '6分以下'
+        WHEN score &lt; 7 THEN '6-7分'
+        WHEN score &lt; 8 THEN '7-8分'
+        WHEN score &lt; 9 THEN '8-9分'
+        ELSE '9分及以上'
+        END AS segmentName,
+        CASE
+        WHEN score IS NULL THEN 99
+        WHEN score &lt; 6 THEN 1
+        WHEN score &lt; 7 THEN 2
+        WHEN score &lt; 8 THEN 3
+        WHEN score &lt; 9 THEN 4
+        ELSE 5
+        END AS sortNo,
+        like_count,
+        negative_count
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ) t
+        GROUP BY segmentName, sortNo
+        ORDER BY sortNo ASC
+    </select>
+
+</mapper>

@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.base_project.mapper.StudentExamPerformanceMapper">
+
+    <resultMap id="StudentExamPerformanceMap" type="org.example.base_project.entity.StudentExamPerformance">
+        <id column="id" property="id"/>
+
+        <result column="student_id" property="studentId"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+
+        <result column="parental_education" property="parentalEducation"/>
+        <result column="family_income" property="familyIncome"/>
+        <result column="internet_access" property="internetAccess"/>
+        <result column="study_environment" property="studyEnvironment"/>
+
+        <result column="study_hours_per_day" property="studyHoursPerDay"/>
+        <result column="attendance_rate" property="attendanceRate"/>
+        <result column="sleep_hours" property="sleepHours"/>
+        <result column="social_media_hours" property="socialMediaHours"/>
+        <result column="assignment_completion_rate" property="assignmentCompletionRate"/>
+        <result column="participation_score" property="participationScore"/>
+
+        <result column="online_courses_completed" property="onlineCoursesCompleted"/>
+        <result column="tutoring" property="tutoring"/>
+
+        <result column="math_score" property="mathScore"/>
+        <result column="reading_score" property="readingScore"/>
+        <result column="writing_score" property="writingScore"/>
+        <result column="science_score" property="scienceScore"/>
+        <result column="final_exam_score" property="finalExamScore"/>
+        <result column="previous_gpa" property="previousGpa"/>
+
+        <result column="pass_fail" property="passFail"/>
+        <result column="grade_category" property="gradeCategory"/>
+
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        `visualization_project`.`student_exam_performance`
+    </sql>
+
+    <sql id="BaseColumns">
+        id,
+        student_id,
+        gender,
+        age,
+        parental_education,
+        family_income,
+        internet_access,
+        study_environment,
+        study_hours_per_day,
+        attendance_rate,
+        sleep_hours,
+        social_media_hours,
+        assignment_completion_rate,
+        participation_score,
+        online_courses_completed,
+        tutoring,
+        math_score,
+        reading_score,
+        writing_score,
+        science_score,
+        final_exam_score,
+        previous_gpa,
+        pass_fail,
+        grade_category,
+        DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time
+    </sql>
+
+    <sql id="QueryConditionSql">
+        <if test="studentId != null and studentId != ''">
+            AND student_id LIKE CONCAT('%', #{studentId}, '%')
+        </if>
+
+        <if test="gender != null and gender != ''">
+            AND gender = #{gender}
+        </if>
+
+        <if test="parentalEducation != null and parentalEducation != ''">
+            AND parental_education = #{parentalEducation}
+        </if>
+
+        <if test="familyIncome != null and familyIncome != ''">
+            AND family_income = #{familyIncome}
+        </if>
+
+        <if test="internetAccess != null and internetAccess != ''">
+            AND internet_access = #{internetAccess}
+        </if>
+
+        <if test="studyEnvironment != null and studyEnvironment != ''">
+            AND study_environment = #{studyEnvironment}
+        </if>
+
+        <if test="tutoring != null and tutoring != ''">
+            AND tutoring = #{tutoring}
+        </if>
+
+        <if test="passFail != null and passFail != ''">
+            AND pass_fail = #{passFail}
+        </if>
+
+        <if test="gradeCategory != null and gradeCategory != ''">
+            AND grade_category = #{gradeCategory}
+        </if>
+
+        <if test="ageMin != null">
+            AND age &gt;= #{ageMin}
+        </if>
+
+        <if test="ageMax != null">
+            AND age &lt;= #{ageMax}
+        </if>
+
+        <if test="finalScoreMin != null">
+            AND final_exam_score &gt;= #{finalScoreMin}
+        </if>
+
+        <if test="finalScoreMax != null">
+            AND final_exam_score &lt;= #{finalScoreMax}
+        </if>
+
+        <if test="studyHoursMin != null">
+            AND study_hours_per_day &gt;= #{studyHoursMin}
+        </if>
+
+        <if test="studyHoursMax != null">
+            AND study_hours_per_day &lt;= #{studyHoursMax}
+        </if>
+    </sql>
+
+    <sql id="WhereSql">
+        <where>
+            <include refid="QueryConditionSql"/>
+        </where>
+    </sql>
+
+    <select id="selectPage" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultMap="StudentExamPerformanceMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="long">
+        SELECT COUNT(1)
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectById" resultMap="StudentExamPerformanceMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="org.example.base_project.entity.StudentExamPerformance" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="TableName"/>
+        (
+        student_id,
+        gender,
+        age,
+        parental_education,
+        family_income,
+        internet_access,
+        study_environment,
+        study_hours_per_day,
+        attendance_rate,
+        sleep_hours,
+        social_media_hours,
+        assignment_completion_rate,
+        participation_score,
+        online_courses_completed,
+        tutoring,
+        math_score,
+        reading_score,
+        writing_score,
+        science_score,
+        final_exam_score,
+        previous_gpa,
+        pass_fail,
+        grade_category
+        )
+        VALUES
+        (
+        #{studentId},
+        #{gender},
+        #{age},
+        #{parentalEducation},
+        #{familyIncome},
+        #{internetAccess},
+        #{studyEnvironment},
+        #{studyHoursPerDay},
+        #{attendanceRate},
+        #{sleepHours},
+        #{socialMediaHours},
+        #{assignmentCompletionRate},
+        #{participationScore},
+        #{onlineCoursesCompleted},
+        #{tutoring},
+        #{mathScore},
+        #{readingScore},
+        #{writingScore},
+        #{scienceScore},
+        #{finalExamScore},
+        #{previousGpa},
+        #{passFail},
+        #{gradeCategory}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.example.base_project.entity.StudentExamPerformance">
+        UPDATE
+        <include refid="TableName"/>
+        SET
+        student_id = #{studentId},
+        gender = #{gender},
+        age = #{age},
+        parental_education = #{parentalEducation},
+        family_income = #{familyIncome},
+        internet_access = #{internetAccess},
+        study_environment = #{studyEnvironment},
+        study_hours_per_day = #{studyHoursPerDay},
+        attendance_rate = #{attendanceRate},
+        sleep_hours = #{sleepHours},
+        social_media_hours = #{socialMediaHours},
+        assignment_completion_rate = #{assignmentCompletionRate},
+        participation_score = #{participationScore},
+        online_courses_completed = #{onlineCoursesCompleted},
+        tutoring = #{tutoring},
+        math_score = #{mathScore},
+        reading_score = #{readingScore},
+        writing_score = #{writingScore},
+        science_score = #{scienceScore},
+        final_exam_score = #{finalExamScore},
+        previous_gpa = #{previousGpa},
+        pass_fail = #{passFail},
+        grade_category = #{gradeCategory}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectGenderOptions" resultType="string">
+        SELECT DISTINCT gender
+        FROM <include refid="TableName"/>
+        WHERE gender IS NOT NULL AND gender != ''
+        ORDER BY gender ASC
+    </select>
+
+    <select id="selectParentalEducationOptions" resultType="string">
+        SELECT DISTINCT parental_education
+        FROM <include refid="TableName"/>
+        WHERE parental_education IS NOT NULL AND parental_education != ''
+        ORDER BY parental_education ASC
+    </select>
+
+    <select id="selectFamilyIncomeOptions" resultType="string">
+        SELECT DISTINCT family_income
+        FROM <include refid="TableName"/>
+        WHERE family_income IS NOT NULL AND family_income != ''
+        ORDER BY family_income ASC
+    </select>
+
+    <select id="selectInternetAccessOptions" resultType="string">
+        SELECT DISTINCT internet_access
+        FROM <include refid="TableName"/>
+        WHERE internet_access IS NOT NULL AND internet_access != ''
+        ORDER BY internet_access ASC
+    </select>
+
+    <select id="selectStudyEnvironmentOptions" resultType="string">
+        SELECT DISTINCT study_environment
+        FROM <include refid="TableName"/>
+        WHERE study_environment IS NOT NULL AND study_environment != ''
+        ORDER BY study_environment ASC
+    </select>
+
+    <select id="selectTutoringOptions" resultType="string">
+        SELECT DISTINCT tutoring
+        FROM <include refid="TableName"/>
+        WHERE tutoring IS NOT NULL AND tutoring != ''
+        ORDER BY tutoring ASC
+    </select>
+
+    <select id="selectPassFailOptions" resultType="string">
+        SELECT DISTINCT pass_fail
+        FROM <include refid="TableName"/>
+        WHERE pass_fail IS NOT NULL AND pass_fail != ''
+        ORDER BY pass_fail ASC
+    </select>
+
+    <select id="selectGradeCategoryOptions" resultType="string">
+        SELECT DISTINCT grade_category
+        FROM <include refid="TableName"/>
+        WHERE grade_category IS NOT NULL AND grade_category != ''
+        ORDER BY grade_category ASC
+    </select>
+
+    <select id="selectAnalysisSummary" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COUNT(1) AS totalCount,
+            COUNT(DISTINCT gender) AS genderCount,
+            COUNT(DISTINCT grade_category) AS gradeCategoryCount,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(AVG(math_score), 2) AS avgMathScore,
+            ROUND(AVG(reading_score), 2) AS avgReadingScore,
+            ROUND(AVG(writing_score), 2) AS avgWritingScore,
+            ROUND(AVG(science_score), 2) AS avgScienceScore,
+            ROUND(AVG(previous_gpa), 2) AS avgPreviousGpa,
+            ROUND(AVG(study_hours_per_day), 2) AS avgStudyHours,
+            ROUND(AVG(attendance_rate), 2) AS avgAttendanceRate,
+            ROUND(AVG(sleep_hours), 2) AS avgSleepHours,
+            ROUND(AVG(social_media_hours), 2) AS avgSocialMediaHours,
+            ROUND(AVG(assignment_completion_rate), 2) AS avgAssignmentRate,
+            ROUND(AVG(participation_score), 2) AS avgParticipationScore,
+            ROUND(AVG(online_courses_completed), 2) AS avgOnlineCourses,
+            SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) AS passCount,
+            SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%fail%' THEN 1 ELSE 0 END) AS failCount,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(tutoring, '')) IN ('yes', 'y', 'true', '1', '是') THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS tutoringRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectPassFailDistribution" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(pass_fail, ''), '未知状态') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(COUNT(1) / NULLIF((SELECT COUNT(1) FROM <include refid="TableName"/> <include refid="WhereSql"/>), 0) * 100, 2) AS ratio,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(AVG(study_hours_per_day), 2) AS avgStudyHours
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(pass_fail, ''), '未知状态')
+        ORDER BY totalCount DESC
+    </select>
+
+    <select id="selectGradeDistribution" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(grade_category, ''), '未知等级') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(COUNT(1) / NULLIF((SELECT COUNT(1) FROM <include refid="TableName"/> <include refid="WhereSql"/>), 0) * 100, 2) AS ratio,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(grade_category, ''), '未知等级')
+        ORDER BY avgFinalScore DESC, totalCount DESC
+    </select>
+
+    <select id="selectGenderDistribution" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(gender, ''), '未知性别') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(COUNT(1) / NULLIF((SELECT COUNT(1) FROM <include refid="TableName"/> <include refid="WhereSql"/>), 0) * 100, 2) AS ratio,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(gender, ''), '未知性别')
+        ORDER BY totalCount DESC
+    </select>
+
+    <select id="selectSubjectAverage" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT '数学成绩' AS subjectName, ROUND(AVG(math_score), 2) AS avgScore, ROUND(MAX(math_score), 2) AS maxScore, ROUND(MIN(math_score), 2) AS minScore FROM <include refid="TableName"/> <include refid="WhereSql"/>
+        UNION ALL
+        SELECT '阅读成绩' AS subjectName, ROUND(AVG(reading_score), 2) AS avgScore, ROUND(MAX(reading_score), 2) AS maxScore, ROUND(MIN(reading_score), 2) AS minScore FROM <include refid="TableName"/> <include refid="WhereSql"/>
+        UNION ALL
+        SELECT '写作成绩' AS subjectName, ROUND(AVG(writing_score), 2) AS avgScore, ROUND(MAX(writing_score), 2) AS maxScore, ROUND(MIN(writing_score), 2) AS minScore FROM <include refid="TableName"/> <include refid="WhereSql"/>
+        UNION ALL
+        SELECT '科学成绩' AS subjectName, ROUND(AVG(science_score), 2) AS avgScore, ROUND(MAX(science_score), 2) AS maxScore, ROUND(MIN(science_score), 2) AS minScore FROM <include refid="TableName"/> <include refid="WhereSql"/>
+        UNION ALL
+        SELECT '期末成绩' AS subjectName, ROUND(AVG(final_exam_score), 2) AS avgScore, ROUND(MAX(final_exam_score), 2) AS maxScore, ROUND(MIN(final_exam_score), 2) AS minScore FROM <include refid="TableName"/> <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectAgeSegmentStats" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            CASE
+                WHEN age IS NULL THEN '未知年龄'
+                WHEN age &lt;= 12 THEN '12岁及以下'
+                WHEN age BETWEEN 13 AND 15 THEN '13-15岁'
+                WHEN age BETWEEN 16 AND 18 THEN '16-18岁'
+                WHEN age BETWEEN 19 AND 22 THEN '19-22岁'
+                ELSE '23岁及以上'
+            END AS segmentName,
+            CASE
+                WHEN age IS NULL THEN 99
+                WHEN age &lt;= 12 THEN 1
+                WHEN age BETWEEN 13 AND 15 THEN 2
+                WHEN age BETWEEN 16 AND 18 THEN 3
+                WHEN age BETWEEN 19 AND 22 THEN 4
+                ELSE 5
+            END AS sortNo,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(AVG(study_hours_per_day), 2) AS avgStudyHours,
+            ROUND(AVG(attendance_rate), 2) AS avgAttendanceRate,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY segmentName, sortNo
+        ORDER BY sortNo ASC
+    </select>
+
+    <select id="selectStudyHourSegmentStats" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            CASE
+                WHEN study_hours_per_day IS NULL THEN '未知时长'
+                WHEN study_hours_per_day &lt; 1 THEN '1小时以下'
+                WHEN study_hours_per_day &gt;= 1 AND study_hours_per_day &lt; 2 THEN '1-2小时'
+                WHEN study_hours_per_day &gt;= 2 AND study_hours_per_day &lt; 4 THEN '2-4小时'
+                WHEN study_hours_per_day &gt;= 4 AND study_hours_per_day &lt; 6 THEN '4-6小时'
+                ELSE '6小时及以上'
+            END AS segmentName,
+            CASE
+                WHEN study_hours_per_day IS NULL THEN 99
+                WHEN study_hours_per_day &lt; 1 THEN 1
+                WHEN study_hours_per_day &gt;= 1 AND study_hours_per_day &lt; 2 THEN 2
+                WHEN study_hours_per_day &gt;= 2 AND study_hours_per_day &lt; 4 THEN 3
+                WHEN study_hours_per_day &gt;= 4 AND study_hours_per_day &lt; 6 THEN 4
+                ELSE 5
+            END AS sortNo,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(AVG(attendance_rate), 2) AS avgAttendanceRate,
+            ROUND(AVG(assignment_completion_rate), 2) AS avgAssignmentRate,
+            ROUND(AVG(social_media_hours), 2) AS avgSocialMediaHours,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY segmentName, sortNo
+        ORDER BY sortNo ASC
+    </select>
+
+    <select id="selectFamilyIncomeStats" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(family_income, ''), '未知收入') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(AVG(study_hours_per_day), 2) AS avgStudyHours,
+            ROUND(AVG(attendance_rate), 2) AS avgAttendanceRate,
+            ROUND(AVG(previous_gpa), 2) AS avgPreviousGpa,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(family_income, ''), '未知收入')
+        ORDER BY avgFinalScore DESC, totalCount DESC
+    </select>
+
+    <select id="selectParentalEducationStats" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(parental_education, ''), '未知教育') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(AVG(study_hours_per_day), 2) AS avgStudyHours,
+            ROUND(AVG(attendance_rate), 2) AS avgAttendanceRate,
+            ROUND(AVG(previous_gpa), 2) AS avgPreviousGpa,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(parental_education, ''), '未知教育')
+        ORDER BY avgFinalScore DESC, totalCount DESC
+    </select>
+
+    <select id="selectInternetAccessStats" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(internet_access, ''), '未知网络') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(AVG(online_courses_completed), 2) AS avgOnlineCourses,
+            ROUND(AVG(assignment_completion_rate), 2) AS avgAssignmentRate,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(internet_access, ''), '未知网络')
+        ORDER BY avgFinalScore DESC, totalCount DESC
+    </select>
+
+    <select id="selectStudyEnvironmentStats" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(study_environment, ''), '未知环境') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(AVG(study_hours_per_day), 2) AS avgStudyHours,
+            ROUND(AVG(attendance_rate), 2) AS avgAttendanceRate,
+            ROUND(AVG(assignment_completion_rate), 2) AS avgAssignmentRate,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(study_environment, ''), '未知环境')
+        ORDER BY avgFinalScore DESC, totalCount DESC
+    </select>
+
+    <select id="selectSubjectRadarByGrade" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(grade_category, ''), '未知等级') AS gradeCategory,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(math_score), 2) AS avgMathScore,
+            ROUND(AVG(reading_score), 2) AS avgReadingScore,
+            ROUND(AVG(writing_score), 2) AS avgWritingScore,
+            ROUND(AVG(science_score), 2) AS avgScienceScore,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore,
+            ROUND(SUM(CASE WHEN LOWER(IFNULL(pass_fail, '')) LIKE '%pass%' THEN 1 ELSE 0 END) / NULLIF(COUNT(1), 0) * 100, 2) AS passRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(grade_category, ''), '未知等级')
+        ORDER BY avgFinalScore DESC
+        LIMIT 6
+    </select>
+
+    <select id="selectBehaviorRadarByPass" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(pass_fail, ''), '未知状态') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(study_hours_per_day), 2) AS avgStudyHours,
+            ROUND(AVG(attendance_rate), 2) AS avgAttendanceRate,
+            ROUND(AVG(sleep_hours), 2) AS avgSleepHours,
+            ROUND(AVG(social_media_hours), 2) AS avgSocialMediaHours,
+            ROUND(AVG(assignment_completion_rate), 2) AS avgAssignmentRate,
+            ROUND(AVG(participation_score), 2) AS avgParticipationScore,
+            ROUND(AVG(online_courses_completed), 2) AS avgOnlineCourses,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY COALESCE(NULLIF(pass_fail, ''), '未知状态')
+        ORDER BY avgFinalScore DESC
+    </select>
+
+    <select id="selectBehaviorScoreScatter" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            student_id AS studentId,
+            study_hours_per_day AS studyHoursPerDay,
+            attendance_rate AS attendanceRate,
+            assignment_completion_rate AS assignmentCompletionRate,
+            social_media_hours AS socialMediaHours,
+            sleep_hours AS sleepHours,
+            final_exam_score AS finalExamScore,
+            pass_fail AS passFail,
+            grade_category AS gradeCategory
+        FROM
+        <include refid="TableName"/>
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <include refid="QueryConditionSql"/>
+            AND study_hours_per_day IS NOT NULL
+            AND final_exam_score IS NOT NULL
+        </trim>
+        ORDER BY id DESC
+        LIMIT 1200
+    </select>
+
+    <select id="selectGradeStudyHourHeatmap" parameterType="org.example.base_project.entity.StudentExamPerformanceQuery" resultType="map">
+        SELECT
+            COALESCE(NULLIF(grade_category, ''), '未知等级') AS gradeCategory,
+            CASE
+                WHEN study_hours_per_day IS NULL THEN '未知时长'
+                WHEN study_hours_per_day &lt; 1 THEN '1小时以下'
+                WHEN study_hours_per_day &gt;= 1 AND study_hours_per_day &lt; 2 THEN '1-2小时'
+                WHEN study_hours_per_day &gt;= 2 AND study_hours_per_day &lt; 4 THEN '2-4小时'
+                WHEN study_hours_per_day &gt;= 4 AND study_hours_per_day &lt; 6 THEN '4-6小时'
+                ELSE '6小时及以上'
+            END AS studyHourSegment,
+            CASE
+                WHEN study_hours_per_day IS NULL THEN 99
+                WHEN study_hours_per_day &lt; 1 THEN 1
+                WHEN study_hours_per_day &gt;= 1 AND study_hours_per_day &lt; 2 THEN 2
+                WHEN study_hours_per_day &gt;= 2 AND study_hours_per_day &lt; 4 THEN 3
+                WHEN study_hours_per_day &gt;= 4 AND study_hours_per_day &lt; 6 THEN 4
+                ELSE 5
+            END AS sortNo,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(final_exam_score), 2) AS avgFinalScore
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY gradeCategory, studyHourSegment, sortNo
+        ORDER BY sortNo ASC, gradeCategory ASC
+    </select>
+
+</mapper>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.base_project.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="org.example.base_project.entity.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="name" property="name"/>
+        <result column="role_id" property="roleId"/>
+        <result column="status" property="status"/>
+        <result column="gender" property="genderId"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="avatar_url" property="avatarUrl"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="ip" property="ip"/>
+        <result column="address" property="address"/>
+        <result column="usercode" property="usercode"/>
+        <result column="no" property="no"/>
+        <result column="age" property="age"/>
+    </resultMap>
+
+    <resultMap id="UserListItemMap" type="org.example.base_project.entity.UserListItem">
+        <id column="id" property="id"/>
+        <result column="avatar" property="avatar"/>
+        <result column="status" property="status"/>
+        <result column="userName" property="userName"/>
+        <result column="userGender" property="userGender"/>
+        <result column="nickName" property="nickName"/>
+        <result column="userPhone" property="userPhone"/>
+        <result column="userEmail" property="userEmail"/>
+        <result column="roleId" property="roleId"/>
+        <result column="roleName" property="roleName"/>
+        <result column="roleCode" property="roleCode"/>
+        <result column="createBy" property="createBy"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateBy" property="updateBy"/>
+        <result column="updateTime" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectByName" resultMap="UserResultMap">
+        SELECT *
+        FROM `user`
+        WHERE username = #{username}
+        LIMIT 1
+    </select>
+
+    <select id="selectById" parameterType="int" resultMap="UserResultMap">
+        SELECT *
+        FROM `user`
+        WHERE id = #{id}
+        LIMIT 1
+    </select>
+
+    <sql id="UserListWhere">
+        <where>
+            <if test="userName != null and userName != ''">
+                AND u.username LIKE CONCAT('%', #{userName}, '%')
+            </if>
+            <if test="userPhone != null and userPhone != ''">
+                AND u.phone LIKE CONCAT('%', #{userPhone}, '%')
+            </if>
+            <if test="userEmail != null and userEmail != ''">
+                AND u.email LIKE CONCAT('%', #{userEmail}, '%')
+            </if>
+            <if test="userGender != null and userGender != ''">
+                AND u.gender = CASE #{userGender} WHEN '男' THEN '1' WHEN '女' THEN '2' ELSE #{userGender} END
+            </if>
+            <if test="status != null and status != ''">
+                AND u.status = #{status}
+            </if>
+            <if test="roleId != null">
+                AND u.role_id = #{roleId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" parameterType="org.example.base_project.entity.UserQuery" resultMap="UserListItemMap">
+        SELECT
+            u.id AS id,
+            u.avatar_url AS avatar,
+            IFNULL(u.status, '1') AS status,
+            u.username AS userName,
+            CASE u.gender WHEN '1' THEN '男' WHEN '2' THEN '女' ELSE '' END AS userGender,
+            u.name AS nickName,
+            u.phone AS userPhone,
+            u.email AS userEmail,
+            u.role_id AS roleId,
+            r.role_name AS roleName,
+            r.role_code AS roleCode,
+            'system' AS createBy,
+            u.created_at AS createTime,
+            'system' AS updateBy,
+            u.updated_at AS updateTime
+        FROM `user` u
+        LEFT JOIN `role` r ON u.role_id = r.role_id
+        <include refid="UserListWhere"/>
+        ORDER BY u.id ASC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" parameterType="org.example.base_project.entity.UserQuery" resultType="long">
+        SELECT COUNT(1)
+        FROM `user` u
+        LEFT JOIN `role` r ON u.role_id = r.role_id
+        <include refid="UserListWhere"/>
+    </select>
+
+    <insert id="insert" parameterType="org.example.base_project.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `user` (username, password, name, role_id, status, gender, email, phone, avatar_url, created_at, updated_at, usercode)
+        VALUES (#{username}, #{password}, #{name}, IFNULL(#{roleId}, 3), IFNULL(#{status}, '1'), #{genderId}, #{email}, #{phone}, #{avatarUrl}, #{createdAt}, #{updatedAt}, #{usercode})
+    </insert>
+
+    <insert id="insertUser" parameterType="org.example.base_project.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `user` (username, password, name, role_id, status, gender, email, phone, avatar_url, created_at, updated_at, usercode)
+        VALUES (#{username}, #{password}, #{name}, #{roleId}, #{status}, #{genderId}, #{email}, #{phone}, #{avatarUrl}, #{createdAt}, #{updatedAt}, #{usercode})
+    </insert>
+
+    <update id="updateUser" parameterType="org.example.base_project.entity.User">
+        UPDATE `user`
+        <set>
+            username = #{username},
+            name = #{name},
+            role_id = #{roleId},
+            status = #{status},
+            gender = #{genderId},
+            email = #{email},
+            phone = #{phone},
+            avatar_url = #{avatarUrl},
+            updated_at = #{updatedAt},
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM `user`
+        WHERE id = #{id}
+    </delete>
+
+    <update id="updateStatus">
+        UPDATE `user`
+        SET status = #{status},
+            updated_at = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s')
+        WHERE id = #{id}
+    </update>
+
+    <update id="assignRole">
+        UPDATE `user`
+        SET role_id = #{roleId},
+            updated_at = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s')
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateIp" parameterType="org.example.base_project.entity.LoginUserResult">
+        UPDATE `user`
+        SET ip = #{ip},
+            address = #{address},
+            updated_at = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s')
+        WHERE id = #{id}
+    </update>
+</mapper>

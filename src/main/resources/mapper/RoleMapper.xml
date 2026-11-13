@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.base_project.mapper.RoleMapper">
+
+    <resultMap id="RoleResultMap" type="org.example.base_project.entity.Role">
+        <id column="role_id" property="roleId"/>
+        <result column="role_name" property="roleName"/>
+        <result column="role_code" property="roleCode"/>
+        <result column="description" property="description"/>
+        <result column="enabled" property="enabled"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <sql id="RoleWhere">
+        <where>
+            <if test="roleName != null and roleName != ''">
+                AND role_name LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+            <if test="roleCode != null and roleCode != ''">
+                AND role_code LIKE CONCAT('%', #{roleCode}, '%')
+            </if>
+            <if test="description != null and description != ''">
+                AND description LIKE CONCAT('%', #{description}, '%')
+            </if>
+            <if test="enabled != null">
+                AND enabled = #{enabled}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND create_time &lt;= CONCAT(#{endTime}, ' 23:59:59')
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" parameterType="org.example.base_project.entity.RoleQuery" resultMap="RoleResultMap">
+        SELECT role_id, role_name, role_code, description, enabled, create_time, update_time
+        FROM `role`
+        <include refid="RoleWhere"/>
+        ORDER BY role_id ASC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" parameterType="org.example.base_project.entity.RoleQuery" resultType="long">
+        SELECT COUNT(1)
+        FROM `role`
+        <include refid="RoleWhere"/>
+    </select>
+
+    <select id="selectAllEnabled" resultMap="RoleResultMap">
+        SELECT role_id, role_name, role_code, description, enabled, create_time, update_time
+        FROM `role`
+        WHERE enabled = 1
+        ORDER BY role_id ASC
+    </select>
+
+    <select id="selectById" parameterType="int" resultMap="RoleResultMap">
+        SELECT role_id, role_name, role_code, description, enabled, create_time, update_time
+        FROM `role`
+        WHERE role_id = #{roleId}
+        LIMIT 1
+    </select>
+
+    <select id="selectByCode" parameterType="string" resultMap="RoleResultMap">
+        SELECT role_id, role_name, role_code, description, enabled, create_time, update_time
+        FROM `role`
+        WHERE role_code = #{roleCode}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="org.example.base_project.entity.Role" useGeneratedKeys="true" keyProperty="roleId">
+        INSERT INTO `role` (role_name, role_code, description, enabled, create_time, update_time)
+        VALUES (#{roleName}, #{roleCode}, #{description}, #{enabled}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update" parameterType="org.example.base_project.entity.Role">
+        UPDATE `role`
+        SET role_name = #{roleName},
+            role_code = #{roleCode},
+            description = #{description},
+            enabled = #{enabled},
+            update_time = #{updateTime}
+        WHERE role_id = #{roleId}
+    </update>
+
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM `role`
+        WHERE role_id = #{roleId}
+    </delete>
+
+    <select id="countUserByRoleId" parameterType="int" resultType="int">
+        SELECT COUNT(1)
+        FROM `user`
+        WHERE role_id = #{roleId}
+    </select>
+</mapper>

@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.base_project.mapper.RentalHouseMapper">
+
+    <resultMap id="RentalHouseDataMap" type="org.example.base_project.entity.RentalHouseData">
+        <id column="id" property="id"/>
+
+        <result column="source_id" property="sourceId"/>
+        <result column="rent" property="rent"/>
+        <result column="bedroom" property="bedroom"/>
+        <result column="livingroom" property="livingroom"/>
+        <result column="bathroom" property="bathroom"/>
+        <result column="area" property="area"/>
+
+        <result column="room" property="room"/>
+        <result column="floor_grp" property="floorGrp"/>
+        <result column="subway" property="subway"/>
+        <result column="region" property="region"/>
+        <result column="heating" property="heating"/>
+
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        `visualization_project`.`rental_house_data`
+    </sql>
+
+    <sql id="BaseColumns">
+        id,
+        source_id,
+        rent,
+        bedroom,
+        livingroom,
+        bathroom,
+        area,
+        room,
+        floor_grp,
+        subway,
+        region,
+        heating,
+        DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time
+    </sql>
+
+    <sql id="WhereSql">
+        <where>
+            <if test="room != null and room != ''">
+                AND room = #{room}
+            </if>
+
+            <if test="floorGrp != null and floorGrp != ''">
+                AND floor_grp = #{floorGrp}
+            </if>
+
+            <if test="subway != null and subway != ''">
+                AND subway = #{subway}
+            </if>
+
+            <if test="region != null and region != ''">
+                AND region = #{region}
+            </if>
+
+            <if test="heating != null and heating != ''">
+                AND heating = #{heating}
+            </if>
+
+            <if test="bedroom != null">
+                AND bedroom = #{bedroom}
+            </if>
+
+            <if test="livingroom != null">
+                AND livingroom = #{livingroom}
+            </if>
+
+            <if test="bathroom != null">
+                AND bathroom = #{bathroom}
+            </if>
+
+            <if test="rentMin != null">
+                AND rent &gt;= #{rentMin}
+            </if>
+
+            <if test="rentMax != null">
+                AND rent &lt;= #{rentMax}
+            </if>
+
+            <if test="areaMin != null">
+                AND area &gt;= #{areaMin}
+            </if>
+
+            <if test="areaMax != null">
+                AND area &lt;= #{areaMax}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="RegionNameSql">
+        CASE
+            WHEN region IS NULL OR TRIM(region) = '' THEN '未知区域'
+            WHEN region LIKE '%东城%' THEN '东城区'
+            WHEN region LIKE '%西城%' THEN '西城区'
+            WHEN region LIKE '%朝阳%' THEN '朝阳区'
+            WHEN region LIKE '%丰台%' THEN '丰台区'
+            WHEN region LIKE '%石景山%' THEN '石景山区'
+            WHEN region LIKE '%海淀%' THEN '海淀区'
+            WHEN region LIKE '%门头沟%' THEN '门头沟区'
+            WHEN region LIKE '%房山%' THEN '房山区'
+            WHEN region LIKE '%通州%' THEN '通州区'
+            WHEN region LIKE '%顺义%' THEN '顺义区'
+            WHEN region LIKE '%昌平%' THEN '昌平区'
+            WHEN region LIKE '%大兴%' THEN '大兴区'
+            WHEN region LIKE '%怀柔%' THEN '怀柔区'
+            WHEN region LIKE '%平谷%' THEN '平谷区'
+            WHEN region LIKE '%密云%' THEN '密云区'
+            WHEN region LIKE '%延庆%' THEN '延庆区'
+            ELSE region
+        END
+    </sql>
+
+    <sql id="RentSegmentSql">
+        CASE
+            WHEN rent IS NULL THEN '未知租金'
+            WHEN rent &lt; 3000 THEN '3000以下'
+            WHEN rent &gt;= 3000 AND rent &lt; 5000 THEN '3000-5000'
+            WHEN rent &gt;= 5000 AND rent &lt; 8000 THEN '5000-8000'
+            WHEN rent &gt;= 8000 AND rent &lt; 12000 THEN '8000-12000'
+            ELSE '12000以上'
+        END
+    </sql>
+
+    <sql id="RentSegmentOrderSql">
+        CASE
+            WHEN rent IS NULL THEN 99
+            WHEN rent &lt; 3000 THEN 1
+            WHEN rent &gt;= 3000 AND rent &lt; 5000 THEN 2
+            WHEN rent &gt;= 5000 AND rent &lt; 8000 THEN 3
+            WHEN rent &gt;= 8000 AND rent &lt; 12000 THEN 4
+            ELSE 5
+        END
+    </sql>
+
+    <sql id="AreaSegmentSql">
+        CASE
+            WHEN area IS NULL THEN '未知面积'
+            WHEN area &lt; 30 THEN '30㎡以下'
+            WHEN area &gt;= 30 AND area &lt; 50 THEN '30-50㎡'
+            WHEN area &gt;= 50 AND area &lt; 70 THEN '50-70㎡'
+            WHEN area &gt;= 70 AND area &lt; 100 THEN '70-100㎡'
+            ELSE '100㎡以上'
+        END
+    </sql>
+
+    <sql id="AreaSegmentOrderSql">
+        CASE
+            WHEN area IS NULL THEN 99
+            WHEN area &lt; 30 THEN 1
+            WHEN area &gt;= 30 AND area &lt; 50 THEN 2
+            WHEN area &gt;= 50 AND area &lt; 70 THEN 3
+            WHEN area &gt;= 70 AND area &lt; 100 THEN 4
+            ELSE 5
+        END
+    </sql>
+
+    <sql id="BedroomSegmentSql">
+        CASE
+            WHEN bedroom IS NULL THEN '未知'
+            WHEN bedroom &lt;= 0 THEN '0室'
+            WHEN bedroom = 1 THEN '1室'
+            WHEN bedroom = 2 THEN '2室'
+            WHEN bedroom = 3 THEN '3室'
+            WHEN bedroom = 4 THEN '4室'
+            ELSE '5室及以上'
+        END
+    </sql>
+
+    <sql id="BedroomSegmentOrderSql">
+        CASE
+            WHEN bedroom IS NULL THEN 99
+            WHEN bedroom &lt;= 0 THEN 0
+            WHEN bedroom = 1 THEN 1
+            WHEN bedroom = 2 THEN 2
+            WHEN bedroom = 3 THEN 3
+            WHEN bedroom = 4 THEN 4
+            ELSE 5
+        END
+    </sql>
+
+    <sql id="SubwayFlagSql">
+        CASE
+            WHEN subway IS NULL OR TRIM(subway) = '' THEN '未知'
+            WHEN subway LIKE '%否%' OR subway LIKE '%无%' OR subway LIKE '%远%' THEN '非近地铁'
+            WHEN subway LIKE '%是%' OR subway LIKE '%有%' OR subway LIKE '%近%' THEN '近地铁'
+            ELSE subway
+        END
+    </sql>
+
+    <sql id="HeatingFlagSql">
+        CASE
+            WHEN heating IS NULL OR TRIM(heating) = '' THEN '未知'
+            WHEN heating LIKE '%集中%' THEN '集中供暖'
+            WHEN heating LIKE '%自%' OR heating LIKE '%壁挂%' OR heating LIKE '%独立%' THEN '自采暖'
+            WHEN heating LIKE '%否%' OR heating LIKE '%无%' THEN '无供暖'
+            ELSE heating
+        END
+    </sql>
+
+    <select id="selectPage" parameterType="org.example.base_project.entity.RentalHouseQuery" resultMap="RentalHouseDataMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="long">
+        SELECT COUNT(1)
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectById" resultMap="RentalHouseDataMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="org.example.base_project.entity.RentalHouseData" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="TableName"/>
+        (
+        source_id,
+        rent,
+        bedroom,
+        livingroom,
+        bathroom,
+        area,
+        room,
+        floor_grp,
+        subway,
+        region,
+        heating
+        )
+        VALUES
+        (
+        #{sourceId},
+        #{rent},
+        #{bedroom},
+        #{livingroom},
+        #{bathroom},
+        #{area},
+        #{room},
+        #{floorGrp},
+        #{subway},
+        #{region},
+        #{heating}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.example.base_project.entity.RentalHouseData">
+        UPDATE
+        <include refid="TableName"/>
+        SET
+        source_id = #{sourceId},
+        rent = #{rent},
+        bedroom = #{bedroom},
+        livingroom = #{livingroom},
+        bathroom = #{bathroom},
+        area = #{area},
+        room = #{room},
+        floor_grp = #{floorGrp},
+        subway = #{subway},
+        region = #{region},
+        heating = #{heating}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectRoomOptions" resultType="string">
+        SELECT DISTINCT room
+        FROM
+        <include refid="TableName"/>
+        WHERE room IS NOT NULL AND room != ''
+        ORDER BY room ASC
+    </select>
+
+    <select id="selectFloorGrpOptions" resultType="string">
+        SELECT DISTINCT floor_grp
+        FROM
+        <include refid="TableName"/>
+        WHERE floor_grp IS NOT NULL AND floor_grp != ''
+        ORDER BY floor_grp ASC
+    </select>
+
+    <select id="selectSubwayOptions" resultType="string">
+        SELECT DISTINCT subway
+        FROM
+        <include refid="TableName"/>
+        WHERE subway IS NOT NULL AND subway != ''
+        ORDER BY subway ASC
+    </select>
+
+    <select id="selectRegionOptions" resultType="string">
+        SELECT DISTINCT region
+        FROM
+        <include refid="TableName"/>
+        WHERE region IS NOT NULL AND region != ''
+        ORDER BY region ASC
+    </select>
+
+    <select id="selectHeatingOptions" resultType="string">
+        SELECT DISTINCT heating
+        FROM
+        <include refid="TableName"/>
+        WHERE heating IS NOT NULL AND heating != ''
+        ORDER BY heating ASC
+    </select>
+
+    <!-- ================= 房屋租赁数据挖掘与可视化分析 SQL ================= -->
+
+    <select id="selectAnalysisSummary" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            COUNT(1) AS totalCount,
+            COUNT(DISTINCT CASE WHEN region IS NOT NULL AND TRIM(region) != '' THEN region END) AS regionCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(MIN(rent), 2) AS minRent,
+            ROUND(MAX(rent), 2) AS maxRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent,
+            ROUND(AVG(bedroom), 2) AS avgBedroom,
+            SUM(CASE WHEN subway IS NOT NULL AND TRIM(subway) != '' AND subway NOT LIKE '%否%' AND subway NOT LIKE '%无%' AND subway NOT LIKE '%远%' AND (subway LIKE '%是%' OR subway LIKE '%有%' OR subway LIKE '%近%') THEN 1 ELSE 0 END) AS subwayCount,
+            ROUND(SUM(CASE WHEN subway IS NOT NULL AND TRIM(subway) != '' AND subway NOT LIKE '%否%' AND subway NOT LIKE '%无%' AND subway NOT LIKE '%远%' AND (subway LIKE '%是%' OR subway LIKE '%有%' OR subway LIKE '%近%') THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS subwayRate,
+            SUM(CASE WHEN heating IS NOT NULL AND heating LIKE '%集中%' THEN 1 ELSE 0 END) AS centralizedHeatingCount,
+            ROUND(SUM(CASE WHEN heating IS NOT NULL AND heating LIKE '%集中%' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS centralizedHeatingRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectRegionStats" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            regionName,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(MIN(rent), 2) AS minRent,
+            ROUND(MAX(rent), 2) AS maxRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent,
+            ROUND(AVG(bedroom), 2) AS avgBedroom,
+            ROUND(SUM(CASE WHEN subway IS NOT NULL AND TRIM(subway) != '' AND subway NOT LIKE '%否%' AND subway NOT LIKE '%无%' AND subway NOT LIKE '%远%' AND (subway LIKE '%是%' OR subway LIKE '%有%' OR subway LIKE '%近%') THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS subwayRate,
+            ROUND(SUM(CASE WHEN heating IS NOT NULL AND heating LIKE '%集中%' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS centralizedHeatingRate
+        FROM (
+            SELECT
+                <include refid="RegionNameSql"/> AS regionName,
+                rent,
+                area,
+                bedroom,
+                subway,
+                heating
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY regionName
+        ORDER BY totalCount DESC, avgRent DESC
+    </select>
+
+    <select id="selectRentSegmentStats" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            rentSegment,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent
+        FROM (
+            SELECT
+                <include refid="RentSegmentSql"/> AS rentSegment,
+                <include refid="RentSegmentOrderSql"/> AS orderNo,
+                rent,
+                area
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY rentSegment, orderNo
+        ORDER BY orderNo ASC
+    </select>
+
+    <select id="selectAreaSegmentStats" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            areaSegment,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent
+        FROM (
+            SELECT
+                <include refid="AreaSegmentSql"/> AS areaSegment,
+                <include refid="AreaSegmentOrderSql"/> AS orderNo,
+                rent,
+                area
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY areaSegment, orderNo
+        ORDER BY orderNo ASC
+    </select>
+
+    <select id="selectRoomDistribution" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            CASE WHEN room IS NULL OR TRIM(room) = '' THEN '未知房型' ELSE room END AS name,
+            COUNT(1) AS value,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY CASE WHEN room IS NULL OR TRIM(room) = '' THEN '未知房型' ELSE room END
+        ORDER BY value DESC
+        LIMIT 12
+    </select>
+
+    <select id="selectBedroomStats" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            bedroomSegment,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent
+        FROM (
+            SELECT
+                <include refid="BedroomSegmentSql"/> AS bedroomSegment,
+                <include refid="BedroomSegmentOrderSql"/> AS orderNo,
+                rent,
+                area
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY bedroomSegment, orderNo
+        ORDER BY orderNo ASC
+    </select>
+
+    <select id="selectSubwayStats" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            subwayFlag,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent
+        FROM (
+            SELECT
+                <include refid="SubwayFlagSql"/> AS subwayFlag,
+                rent,
+                area
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY subwayFlag
+        ORDER BY totalCount DESC
+    </select>
+
+    <select id="selectFloorStats" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            CASE WHEN floor_grp IS NULL OR TRIM(floor_grp) = '' THEN '未知楼层' ELSE floor_grp END AS floorGrp,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY CASE WHEN floor_grp IS NULL OR TRIM(floor_grp) = '' THEN '未知楼层' ELSE floor_grp END
+        ORDER BY totalCount DESC
+        LIMIT 12
+    </select>
+
+    <select id="selectHeatingStats" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            heatingFlag,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent
+        FROM (
+            SELECT
+                <include refid="HeatingFlagSql"/> AS heatingFlag,
+                rent,
+                area
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY heatingFlag
+        ORDER BY totalCount DESC
+    </select>
+
+    <select id="selectRegionBedroomHeatmap" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            regionName,
+            bedroomSegment,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent
+        FROM (
+            SELECT
+                <include refid="RegionNameSql"/> AS regionName,
+                <include refid="BedroomSegmentSql"/> AS bedroomSegment,
+                <include refid="BedroomSegmentOrderSql"/> AS bedroomOrder,
+                rent,
+                area
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY regionName, bedroomSegment, bedroomOrder
+        ORDER BY regionName ASC, bedroomOrder ASC
+    </select>
+
+    <select id="selectRentAreaScatter" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            id,
+            regionName,
+            rent,
+            area,
+            ROUND(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END, 2) AS unitRent,
+            bedroom,
+            room
+        FROM (
+            SELECT
+                id,
+                <include refid="RegionNameSql"/> AS regionName,
+                rent,
+                area,
+                bedroom,
+                CASE WHEN room IS NULL OR TRIM(room) = '' THEN '未知房型' ELSE room END AS room
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        WHERE rent IS NOT NULL
+          AND area IS NOT NULL
+          AND area &gt; 0
+        ORDER BY id DESC
+        LIMIT 400
+    </select>
+
+    <select id="selectFeatureRadarStats" parameterType="org.example.base_project.entity.RentalHouseQuery" resultType="map">
+        SELECT
+            subwayFlag,
+            COUNT(1) AS totalCount,
+            ROUND(AVG(rent), 2) AS avgRent,
+            ROUND(AVG(area), 2) AS avgArea,
+            ROUND(AVG(CASE WHEN area IS NOT NULL AND area &gt; 0 THEN rent / area END), 2) AS avgUnitRent,
+            ROUND(AVG(bedroom), 2) AS avgBedroom,
+            ROUND(SUM(CASE WHEN heating IS NOT NULL AND heating LIKE '%集中%' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS centralizedHeatingRate
+        FROM (
+            SELECT
+                <include refid="SubwayFlagSql"/> AS subwayFlag,
+                rent,
+                area,
+                bedroom,
+                heating
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        WHERE subwayFlag IN ('近地铁', '非近地铁')
+        GROUP BY subwayFlag
+        ORDER BY subwayFlag DESC
+    </select>
+
+</mapper>

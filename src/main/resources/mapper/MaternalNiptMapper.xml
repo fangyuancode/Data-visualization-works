@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.base_project.mapper.MaternalNiptMapper">
+
+    <resultMap id="MaternalNiptDataMap" type="org.example.base_project.entity.MaternalNiptData">
+        <id column="id" property="id"/>
+
+        <result column="fetus_gender" property="fetusGender"/>
+        <result column="serial_no" property="serialNo"/>
+        <result column="pregnant_woman_code" property="pregnantWomanCode"/>
+
+        <result column="age" property="age"/>
+        <result column="height" property="height"/>
+        <result column="weight" property="weight"/>
+
+        <result column="last_menstrual_period" property="lastMenstrualPeriod"/>
+        <result column="ivf_pregnancy" property="ivfPregnancy"/>
+        <result column="test_date" property="testDate"/>
+        <result column="blood_draw_count" property="bloodDrawCount"/>
+
+        <result column="gestational_week" property="gestationalWeek"/>
+        <result column="gestational_days" property="gestationalDays"/>
+        <result column="bmi" property="bmi"/>
+
+        <result column="raw_read_count" property="rawReadCount"/>
+        <result column="mapping_ratio" property="mappingRatio"/>
+        <result column="duplicate_read_ratio" property="duplicateReadRatio"/>
+        <result column="unique_mapped_reads" property="uniqueMappedReads"/>
+        <result column="gc_content" property="gcContent"/>
+
+        <result column="chr13_z_value" property="chr13ZValue"/>
+        <result column="chr18_z_value" property="chr18ZValue"/>
+        <result column="chr21_z_value" property="chr21ZValue"/>
+        <result column="chr_x_z_value" property="chrXZValue"/>
+        <result column="chr_y_z_value" property="chrYZValue"/>
+
+        <result column="chr_y_concentration" property="chrYConcentration"/>
+        <result column="chr_x_concentration" property="chrXConcentration"/>
+
+        <result column="chr13_gc_content" property="chr13GcContent"/>
+        <result column="chr18_gc_content" property="chr18GcContent"/>
+        <result column="chr21_gc_content" property="chr21GcContent"/>
+
+        <result column="filtered_read_ratio" property="filteredReadRatio"/>
+        <result column="chromosome_aneuploidy" property="chromosomeAneuploidy"/>
+
+        <result column="pregnancy_count" property="pregnancyCount"/>
+        <result column="production_count" property="productionCount"/>
+        <result column="fetus_healthy" property="fetusHealthy"/>
+
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        `visualization_project`.`maternal_nipt_data`
+    </sql>
+
+    <sql id="BaseColumns">
+        id,
+        fetus_gender,
+        serial_no,
+        pregnant_woman_code,
+        age,
+        height,
+        weight,
+        DATE_FORMAT(last_menstrual_period, '%Y-%m-%d') AS last_menstrual_period,
+        ivf_pregnancy,
+        DATE_FORMAT(test_date, '%Y-%m-%d') AS test_date,
+        blood_draw_count,
+        gestational_week,
+        gestational_days,
+        bmi,
+        raw_read_count,
+        mapping_ratio,
+        duplicate_read_ratio,
+        unique_mapped_reads,
+        gc_content,
+        chr13_z_value,
+        chr18_z_value,
+        chr21_z_value,
+        chr_x_z_value,
+        chr_y_z_value,
+        chr_y_concentration,
+        chr_x_concentration,
+        chr13_gc_content,
+        chr18_gc_content,
+        chr21_gc_content,
+        filtered_read_ratio,
+        chromosome_aneuploidy,
+        pregnancy_count,
+        production_count,
+        fetus_healthy,
+        DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time
+    </sql>
+
+    <sql id="WhereSql">
+        <where>
+            <if test="fetusGender != null and fetusGender != ''">
+                AND fetus_gender = #{fetusGender}
+            </if>
+
+            <if test="pregnantWomanCode != null and pregnantWomanCode != ''">
+                AND pregnant_woman_code LIKE CONCAT('%', #{pregnantWomanCode}, '%')
+            </if>
+
+            <if test="fetusHealthy != null and fetusHealthy != ''">
+                AND fetus_healthy = #{fetusHealthy}
+            </if>
+
+            <if test="chromosomeAneuploidy != null and chromosomeAneuploidy != ''">
+                AND chromosome_aneuploidy = #{chromosomeAneuploidy}
+            </if>
+
+            <if test="ageMin != null">
+                AND age &gt;= #{ageMin}
+            </if>
+
+            <if test="ageMax != null">
+                AND age &lt;= #{ageMax}
+            </if>
+
+            <if test="bmiMin != null">
+                AND bmi &gt;= #{bmiMin}
+            </if>
+
+            <if test="bmiMax != null">
+                AND bmi &lt;= #{bmiMax}
+            </if>
+
+            <if test="gestationalDaysMin != null">
+                AND gestational_days &gt;= #{gestationalDaysMin}
+            </if>
+
+            <if test="gestationalDaysMax != null">
+                AND gestational_days &lt;= #{gestationalDaysMax}
+            </if>
+
+            <if test="testStartDate != null and testStartDate != ''">
+                AND test_date &gt;= #{testStartDate}
+            </if>
+
+            <if test="testEndDate != null and testEndDate != ''">
+                AND test_date &lt;= #{testEndDate}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultMap="MaternalNiptDataMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="long">
+        SELECT COUNT(1)
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectById" resultMap="MaternalNiptDataMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="org.example.base_project.entity.MaternalNiptData" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="TableName"/>
+        (
+        fetus_gender,
+        serial_no,
+        pregnant_woman_code,
+        age,
+        height,
+        weight,
+        last_menstrual_period,
+        ivf_pregnancy,
+        test_date,
+        blood_draw_count,
+        gestational_week,
+        gestational_days,
+        bmi,
+        raw_read_count,
+        mapping_ratio,
+        duplicate_read_ratio,
+        unique_mapped_reads,
+        gc_content,
+        chr13_z_value,
+        chr18_z_value,
+        chr21_z_value,
+        chr_x_z_value,
+        chr_y_z_value,
+        chr_y_concentration,
+        chr_x_concentration,
+        chr13_gc_content,
+        chr18_gc_content,
+        chr21_gc_content,
+        filtered_read_ratio,
+        chromosome_aneuploidy,
+        pregnancy_count,
+        production_count,
+        fetus_healthy
+        )
+        VALUES
+        (
+        #{fetusGender},
+        #{serialNo},
+        #{pregnantWomanCode},
+        #{age},
+        #{height},
+        #{weight},
+        #{lastMenstrualPeriod},
+        #{ivfPregnancy},
+        #{testDate},
+        #{bloodDrawCount},
+        #{gestationalWeek},
+        #{gestationalDays},
+        #{bmi},
+        #{rawReadCount},
+        #{mappingRatio},
+        #{duplicateReadRatio},
+        #{uniqueMappedReads},
+        #{gcContent},
+        #{chr13ZValue},
+        #{chr18ZValue},
+        #{chr21ZValue},
+        #{chrXZValue},
+        #{chrYZValue},
+        #{chrYConcentration},
+        #{chrXConcentration},
+        #{chr13GcContent},
+        #{chr18GcContent},
+        #{chr21GcContent},
+        #{filteredReadRatio},
+        #{chromosomeAneuploidy},
+        #{pregnancyCount},
+        #{productionCount},
+        #{fetusHealthy}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.example.base_project.entity.MaternalNiptData">
+        UPDATE
+        <include refid="TableName"/>
+        SET
+        fetus_gender = #{fetusGender},
+        serial_no = #{serialNo},
+        pregnant_woman_code = #{pregnantWomanCode},
+        age = #{age},
+        height = #{height},
+        weight = #{weight},
+        last_menstrual_period = #{lastMenstrualPeriod},
+        ivf_pregnancy = #{ivfPregnancy},
+        test_date = #{testDate},
+        blood_draw_count = #{bloodDrawCount},
+        gestational_week = #{gestationalWeek},
+        gestational_days = #{gestationalDays},
+        bmi = #{bmi},
+        raw_read_count = #{rawReadCount},
+        mapping_ratio = #{mappingRatio},
+        duplicate_read_ratio = #{duplicateReadRatio},
+        unique_mapped_reads = #{uniqueMappedReads},
+        gc_content = #{gcContent},
+        chr13_z_value = #{chr13ZValue},
+        chr18_z_value = #{chr18ZValue},
+        chr21_z_value = #{chr21ZValue},
+        chr_x_z_value = #{chrXZValue},
+        chr_y_z_value = #{chrYZValue},
+        chr_y_concentration = #{chrYConcentration},
+        chr_x_concentration = #{chrXConcentration},
+        chr13_gc_content = #{chr13GcContent},
+        chr18_gc_content = #{chr18GcContent},
+        chr21_gc_content = #{chr21GcContent},
+        filtered_read_ratio = #{filteredReadRatio},
+        chromosome_aneuploidy = #{chromosomeAneuploidy},
+        pregnancy_count = #{pregnancyCount},
+        production_count = #{productionCount},
+        fetus_healthy = #{fetusHealthy}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectFetusGenderOptions" resultType="string">
+        SELECT DISTINCT fetus_gender
+        FROM
+        <include refid="TableName"/>
+        WHERE fetus_gender IS NOT NULL AND fetus_gender != ''
+        ORDER BY fetus_gender ASC
+    </select>
+
+    <select id="selectFetusHealthyOptions" resultType="string">
+        SELECT DISTINCT fetus_healthy
+        FROM
+        <include refid="TableName"/>
+        WHERE fetus_healthy IS NOT NULL AND fetus_healthy != ''
+        ORDER BY fetus_healthy ASC
+    </select>
+
+    <select id="selectChromosomeAneuploidyOptions" resultType="string">
+        SELECT DISTINCT chromosome_aneuploidy
+        FROM
+        <include refid="TableName"/>
+        WHERE chromosome_aneuploidy IS NOT NULL AND chromosome_aneuploidy != ''
+        ORDER BY chromosome_aneuploidy ASC
+    </select>
+
+
+    <!-- ========================= NIPT检测数据可视化分析SQL ========================= -->
+
+    <sql id="AbnormalCondition">
+        chromosome_aneuploidy IS NOT NULL
+        AND chromosome_aneuploidy != ''
+        AND chromosome_aneuploidy NOT IN ('无', '正常', '未见异常', '否', 'None', 'none', 'NA', 'N/A', '--', '-')
+    </sql>
+
+    <select id="selectAnalysisSummary" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(age), 0), 2) AS avgAge,
+            ROUND(IFNULL(AVG(bmi), 0), 2) AS avgBmi,
+            ROUND(IFNULL(AVG(gestational_days), 0), 2) AS avgGestationalDays,
+            ROUND(IFNULL(AVG(raw_read_count), 0), 0) AS avgRawReadCount,
+            ROUND(IFNULL(AVG(mapping_ratio), 0), 4) AS avgMappingRatio,
+            ROUND(IFNULL(AVG(duplicate_read_ratio), 0), 4) AS avgDuplicateReadRatio,
+            ROUND(IFNULL(AVG(filtered_read_ratio), 0), 4) AS avgFilteredReadRatio,
+            ROUND(IFNULL(AVG(gc_content), 0), 4) AS avgGcContent,
+            ROUND(IFNULL(AVG(chr_y_concentration), 0), 4) AS avgYConcentration,
+            ROUND(IFNULL(AVG(chr_x_concentration), 0), 4) AS avgXConcentration,
+            SUM(CASE WHEN <include refid="AbnormalCondition"/> THEN 1 ELSE 0 END) AS abnormalCount,
+            ROUND(SUM(CASE WHEN <include refid="AbnormalCondition"/> THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS abnormalRate,
+            SUM(CASE WHEN fetus_healthy = '是' THEN 1 ELSE 0 END) AS healthyCount,
+            ROUND(SUM(CASE WHEN fetus_healthy = '是' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS healthyRate,
+            SUM(CASE WHEN fetus_gender = '男胎' THEN 1 ELSE 0 END) AS maleFetusCount,
+            SUM(CASE WHEN fetus_gender = '女胎' THEN 1 ELSE 0 END) AS femaleFetusCount
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectFetusGenderDistribution" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(fetus_gender, ''), '未知') AS name,
+            COUNT(1) AS value
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(fetus_gender, ''), '未知')
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectHealthyDistribution" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(fetus_healthy, ''), '未知') AS name,
+            COUNT(1) AS value
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(fetus_healthy, ''), '未知')
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectAneuploidyDistribution" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            CASE
+                WHEN chromosome_aneuploidy IS NULL OR chromosome_aneuploidy = '' THEN '未提示异常'
+                WHEN chromosome_aneuploidy IN ('无', '正常', '未见异常', '否', 'None', 'none', 'NA', 'N/A', '--', '-') THEN '未提示异常'
+                ELSE chromosome_aneuploidy
+            END AS name,
+            COUNT(1) AS value
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY
+            CASE
+                WHEN chromosome_aneuploidy IS NULL OR chromosome_aneuploidy = '' THEN '未提示异常'
+                WHEN chromosome_aneuploidy IN ('无', '正常', '未见异常', '否', 'None', 'none', 'NA', 'N/A', '--', '-') THEN '未提示异常'
+                ELSE chromosome_aneuploidy
+            END
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectAgeSegmentStats" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            ageSegment,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(bmi), 0), 2) AS avgBmi,
+            ROUND(IFNULL(AVG(gestational_days), 0), 2) AS avgGestationalDays,
+            ROUND(IFNULL(AVG(chr_y_concentration), 0) * 100, 2) AS avgYConcentration,
+            ROUND(IFNULL(AVG(chr21_z_value), 0), 4) AS avgChr21ZValue,
+            SUM(CASE WHEN isAbnormal = 1 THEN 1 ELSE 0 END) AS abnormalCount,
+            ROUND(SUM(CASE WHEN isAbnormal = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS abnormalRate,
+            ROUND(SUM(CASE WHEN fetus_healthy = '是' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS healthyRate
+        FROM (
+            SELECT
+                *,
+                CASE
+                    WHEN age IS NULL THEN '未知'
+                    WHEN age &lt; 25 THEN '&lt;25岁'
+                    WHEN age BETWEEN 25 AND 29 THEN '25-29岁'
+                    WHEN age BETWEEN 30 AND 34 THEN '30-34岁'
+                    WHEN age BETWEEN 35 AND 39 THEN '35-39岁'
+                    ELSE '≥40岁'
+                END AS ageSegment,
+                CASE
+                    WHEN age IS NULL THEN 99
+                    WHEN age &lt; 25 THEN 1
+                    WHEN age BETWEEN 25 AND 29 THEN 2
+                    WHEN age BETWEEN 30 AND 34 THEN 3
+                    WHEN age BETWEEN 35 AND 39 THEN 4
+                    ELSE 5
+                END AS sortOrder,
+                CASE WHEN <include refid="AbnormalCondition"/> THEN 1 ELSE 0 END AS isAbnormal
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY ageSegment, sortOrder
+        ORDER BY sortOrder ASC
+    </select>
+
+    <select id="selectBmiSegmentStats" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            bmiSegment,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(age), 0), 2) AS avgAge,
+            ROUND(IFNULL(AVG(gestational_days), 0), 2) AS avgGestationalDays,
+            ROUND(IFNULL(AVG(chr_y_concentration), 0) * 100, 2) AS avgYConcentration,
+            ROUND(IFNULL(AVG(filtered_read_ratio), 0) * 100, 2) AS avgFilteredReadRatio,
+            ROUND(IFNULL(AVG(mapping_ratio), 0) * 100, 2) AS avgMappingRatio,
+            SUM(CASE WHEN isAbnormal = 1 THEN 1 ELSE 0 END) AS abnormalCount,
+            ROUND(SUM(CASE WHEN isAbnormal = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS abnormalRate,
+            ROUND(SUM(CASE WHEN fetus_healthy = '是' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS healthyRate
+        FROM (
+            SELECT
+                *,
+                CASE
+                    WHEN bmi IS NULL THEN '未知'
+                    WHEN bmi &lt; 18.5 THEN '&lt;18.5偏低'
+                    WHEN bmi &gt;= 18.5 AND bmi &lt; 24 THEN '18.5-23.9正常'
+                    WHEN bmi &gt;= 24 AND bmi &lt; 28 THEN '24-27.9偏高'
+                    ELSE '≥28肥胖'
+                END AS bmiSegment,
+                CASE
+                    WHEN bmi IS NULL THEN 99
+                    WHEN bmi &lt; 18.5 THEN 1
+                    WHEN bmi &gt;= 18.5 AND bmi &lt; 24 THEN 2
+                    WHEN bmi &gt;= 24 AND bmi &lt; 28 THEN 3
+                    ELSE 4
+                END AS sortOrder,
+                CASE WHEN <include refid="AbnormalCondition"/> THEN 1 ELSE 0 END AS isAbnormal
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY bmiSegment, sortOrder
+        ORDER BY sortOrder ASC
+    </select>
+
+    <select id="selectGestationalSegmentStats" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            gestationalSegment,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(bmi), 0), 2) AS avgBmi,
+            ROUND(IFNULL(AVG(mapping_ratio), 0) * 100, 2) AS avgMappingRatio,
+            ROUND(IFNULL(AVG(duplicate_read_ratio), 0) * 100, 2) AS avgDuplicateReadRatio,
+            ROUND(IFNULL(AVG(filtered_read_ratio), 0) * 100, 2) AS avgFilteredReadRatio,
+            ROUND(IFNULL(AVG(gc_content), 0) * 100, 2) AS avgGcContent,
+            ROUND(IFNULL(AVG(chr_y_concentration), 0) * 100, 2) AS avgYConcentration,
+            SUM(CASE WHEN isAbnormal = 1 THEN 1 ELSE 0 END) AS abnormalCount,
+            ROUND(SUM(CASE WHEN isAbnormal = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS abnormalRate
+        FROM (
+            SELECT
+                *,
+                CASE
+                    WHEN gestational_days IS NULL THEN '未知'
+                    WHEN gestational_days &lt; 84 THEN '&lt;12周'
+                    WHEN gestational_days BETWEEN 84 AND 97 THEN '12-13周'
+                    WHEN gestational_days BETWEEN 98 AND 111 THEN '14-15周'
+                    WHEN gestational_days BETWEEN 112 AND 125 THEN '16-17周'
+                    ELSE '≥18周'
+                END AS gestationalSegment,
+                CASE
+                    WHEN gestational_days IS NULL THEN 99
+                    WHEN gestational_days &lt; 84 THEN 1
+                    WHEN gestational_days BETWEEN 84 AND 97 THEN 2
+                    WHEN gestational_days BETWEEN 98 AND 111 THEN 3
+                    WHEN gestational_days BETWEEN 112 AND 125 THEN 4
+                    ELSE 5
+                END AS sortOrder,
+                CASE WHEN <include refid="AbnormalCondition"/> THEN 1 ELSE 0 END AS isAbnormal
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY gestationalSegment, sortOrder
+        ORDER BY sortOrder ASC
+    </select>
+
+    <select id="selectZValueByAgeSegment" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            ageSegment,
+            ROUND(IFNULL(AVG(chr13_z_value), 0), 4) AS avgChr13ZValue,
+            ROUND(IFNULL(AVG(chr18_z_value), 0), 4) AS avgChr18ZValue,
+            ROUND(IFNULL(AVG(chr21_z_value), 0), 4) AS avgChr21ZValue,
+            ROUND(IFNULL(AVG(chr_x_z_value), 0), 4) AS avgChrXZValue,
+            ROUND(IFNULL(AVG(chr_y_z_value), 0), 4) AS avgChrYZValue
+        FROM (
+            SELECT
+                *,
+                CASE
+                    WHEN age IS NULL THEN '未知'
+                    WHEN age &lt; 25 THEN '&lt;25岁'
+                    WHEN age BETWEEN 25 AND 29 THEN '25-29岁'
+                    WHEN age BETWEEN 30 AND 34 THEN '30-34岁'
+                    WHEN age BETWEEN 35 AND 39 THEN '35-39岁'
+                    ELSE '≥40岁'
+                END AS ageSegment,
+                CASE
+                    WHEN age IS NULL THEN 99
+                    WHEN age &lt; 25 THEN 1
+                    WHEN age BETWEEN 25 AND 29 THEN 2
+                    WHEN age BETWEEN 30 AND 34 THEN 3
+                    WHEN age BETWEEN 35 AND 39 THEN 4
+                    ELSE 5
+                END AS sortOrder
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY ageSegment, sortOrder
+        ORDER BY sortOrder ASC
+    </select>
+
+    <select id="selectQualityRadarByFetusGender" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(fetus_gender, ''), '未知') AS fetusGender,
+            ROUND(IFNULL(AVG(mapping_ratio), 0) * 100, 2) AS mappingScore,
+            ROUND((1 - IFNULL(AVG(duplicate_read_ratio), 0)) * 100, 2) AS nonDuplicateScore,
+            ROUND((1 - IFNULL(AVG(filtered_read_ratio), 0)) * 100, 2) AS cleanReadScore,
+            ROUND(IFNULL(AVG(gc_content), 0) * 100, 2) AS gcScore,
+            ROUND(IFNULL(AVG(chr_y_concentration), 0) * 100, 2) AS yConcentrationScore,
+            ROUND(IFNULL(AVG(chr_x_concentration), 0) * 100, 2) AS xConcentrationScore
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(fetus_gender, ''), '未知')
+        ORDER BY COUNT(1) DESC
+    </select>
+
+    <select id="selectBmiYConcentrationScatter" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            id,
+            age,
+            bmi,
+            gestational_days AS gestationalDays,
+            IFNULL(NULLIF(fetus_gender, ''), '未知') AS fetusGender,
+            IFNULL(NULLIF(fetus_healthy, ''), '未知') AS fetusHealthy,
+            ROUND(IFNULL(chr_y_concentration, 0) * 100, 4) AS yConcentration,
+            ROUND(IFNULL(chr_x_concentration, 0) * 100, 4) AS xConcentration,
+            chr21_z_value AS chr21ZValue
+        FROM (
+            SELECT *
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        WHERE bmi IS NOT NULL
+          AND chr_y_concentration IS NOT NULL
+        ORDER BY id DESC
+        LIMIT 500
+    </select>
+
+    <select id="selectTestMonthTrend" parameterType="org.example.base_project.entity.MaternalNiptQuery" resultType="map">
+        SELECT
+            DATE_FORMAT(test_date, '%Y-%m') AS month,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(bmi), 0), 2) AS avgBmi,
+            ROUND(IFNULL(AVG(gestational_days), 0) / 7, 2) AS avgGestationalWeek,
+            ROUND(SUM(CASE WHEN isAbnormal = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS abnormalRate
+        FROM (
+            SELECT
+                *,
+                CASE WHEN <include refid="AbnormalCondition"/> THEN 1 ELSE 0 END AS isAbnormal
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        WHERE test_date IS NOT NULL
+        GROUP BY DATE_FORMAT(test_date, '%Y-%m')
+        ORDER BY month ASC
+    </select>
+
+</mapper>

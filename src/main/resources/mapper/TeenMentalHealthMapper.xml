@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.base_project.mapper.TeenMentalHealthMapper">
+
+    <resultMap id="TeenMentalHealthMap" type="org.example.base_project.entity.TeenMentalHealth">
+        <id column="id" property="id"/>
+
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+
+        <result column="daily_social_media_hours" property="dailySocialMediaHours"/>
+        <result column="platform_usage" property="platformUsage"/>
+
+        <result column="sleep_hours" property="sleepHours"/>
+        <result column="screen_time_before_sleep" property="screenTimeBeforeSleep"/>
+
+        <result column="academic_performance" property="academicPerformance"/>
+        <result column="physical_activity" property="physicalActivity"/>
+
+        <result column="social_interaction_level" property="socialInteractionLevel"/>
+
+        <result column="stress_level" property="stressLevel"/>
+        <result column="anxiety_level" property="anxietyLevel"/>
+        <result column="addiction_level" property="addictionLevel"/>
+
+        <result column="depression_label" property="depressionLabel"/>
+
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="TableName">
+        `visualization_project`.`teen_mental_health`
+    </sql>
+
+    <sql id="BaseColumns">
+        id,
+        age,
+        gender,
+        daily_social_media_hours,
+        platform_usage,
+        sleep_hours,
+        screen_time_before_sleep,
+        academic_performance,
+        physical_activity,
+        social_interaction_level,
+        stress_level,
+        anxiety_level,
+        addiction_level,
+        depression_label,
+        DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') AS create_time
+    </sql>
+
+    <sql id="WhereSql">
+        <where>
+            <if test="gender != null and gender != ''">
+                AND gender = #{gender}
+            </if>
+
+            <if test="platformUsage != null and platformUsage != ''">
+                AND platform_usage = #{platformUsage}
+            </if>
+
+            <if test="socialInteractionLevel != null and socialInteractionLevel != ''">
+                AND social_interaction_level = #{socialInteractionLevel}
+            </if>
+
+            <if test="depressionLabel != null">
+                AND depression_label = #{depressionLabel}
+            </if>
+
+            <if test="ageMin != null">
+                AND age &gt;= #{ageMin}
+            </if>
+
+            <if test="ageMax != null">
+                AND age &lt;= #{ageMax}
+            </if>
+
+            <if test="dailySocialMediaHoursMin != null">
+                AND daily_social_media_hours &gt;= #{dailySocialMediaHoursMin}
+            </if>
+
+            <if test="dailySocialMediaHoursMax != null">
+                AND daily_social_media_hours &lt;= #{dailySocialMediaHoursMax}
+            </if>
+
+            <if test="sleepHoursMin != null">
+                AND sleep_hours &gt;= #{sleepHoursMin}
+            </if>
+
+            <if test="sleepHoursMax != null">
+                AND sleep_hours &lt;= #{sleepHoursMax}
+            </if>
+
+            <if test="academicPerformanceMin != null">
+                AND academic_performance &gt;= #{academicPerformanceMin}
+            </if>
+
+            <if test="academicPerformanceMax != null">
+                AND academic_performance &lt;= #{academicPerformanceMax}
+            </if>
+
+            <if test="stressLevel != null">
+                AND stress_level = #{stressLevel}
+            </if>
+
+            <if test="anxietyLevel != null">
+                AND anxiety_level = #{anxietyLevel}
+            </if>
+
+            <if test="addictionLevel != null">
+                AND addiction_level = #{addictionLevel}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultMap="TeenMentalHealthMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectCount" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="long">
+        SELECT COUNT(1)
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectById" resultMap="TeenMentalHealthMap">
+        SELECT
+        <include refid="BaseColumns"/>
+        FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+        LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="org.example.base_project.entity.TeenMentalHealth" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="TableName"/>
+        (
+        age,
+        gender,
+        daily_social_media_hours,
+        platform_usage,
+        sleep_hours,
+        screen_time_before_sleep,
+        academic_performance,
+        physical_activity,
+        social_interaction_level,
+        stress_level,
+        anxiety_level,
+        addiction_level,
+        depression_label
+        )
+        VALUES
+        (
+        #{age},
+        #{gender},
+        #{dailySocialMediaHours},
+        #{platformUsage},
+        #{sleepHours},
+        #{screenTimeBeforeSleep},
+        #{academicPerformance},
+        #{physicalActivity},
+        #{socialInteractionLevel},
+        #{stressLevel},
+        #{anxietyLevel},
+        #{addictionLevel},
+        #{depressionLabel}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.example.base_project.entity.TeenMentalHealth">
+        UPDATE
+        <include refid="TableName"/>
+        SET
+        age = #{age},
+        gender = #{gender},
+        daily_social_media_hours = #{dailySocialMediaHours},
+        platform_usage = #{platformUsage},
+        sleep_hours = #{sleepHours},
+        screen_time_before_sleep = #{screenTimeBeforeSleep},
+        academic_performance = #{academicPerformance},
+        physical_activity = #{physicalActivity},
+        social_interaction_level = #{socialInteractionLevel},
+        stress_level = #{stressLevel},
+        anxiety_level = #{anxietyLevel},
+        addiction_level = #{addictionLevel},
+        depression_label = #{depressionLabel}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM
+        <include refid="TableName"/>
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectGenderOptions" resultType="string">
+        SELECT DISTINCT gender
+        FROM
+        <include refid="TableName"/>
+        WHERE gender IS NOT NULL AND gender != ''
+        ORDER BY gender ASC
+    </select>
+
+    <select id="selectPlatformUsageOptions" resultType="string">
+        SELECT DISTINCT platform_usage
+        FROM
+        <include refid="TableName"/>
+        WHERE platform_usage IS NOT NULL AND platform_usage != ''
+        ORDER BY platform_usage ASC
+    </select>
+
+    <select id="selectSocialInteractionLevelOptions" resultType="string">
+        SELECT DISTINCT social_interaction_level
+        FROM
+        <include refid="TableName"/>
+        WHERE social_interaction_level IS NOT NULL AND social_interaction_level != ''
+        ORDER BY social_interaction_level ASC
+    </select>
+
+    <select id="selectDepressionLabelOptions" resultType="java.lang.Integer">
+        SELECT DISTINCT depression_label
+        FROM
+        <include refid="TableName"/>
+        WHERE depression_label IS NOT NULL
+        ORDER BY depression_label ASC
+    </select>
+
+
+    <!-- ===== 青少年心理健康数据可视化分析 SQL ===== -->
+
+    <select id="selectAnalysisSummary" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(age), 0), 2) AS avgAge,
+            ROUND(IFNULL(AVG(daily_social_media_hours), 0), 2) AS avgSocialHours,
+            ROUND(IFNULL(AVG(sleep_hours), 0), 2) AS avgSleepHours,
+            ROUND(IFNULL(AVG(screen_time_before_sleep), 0), 2) AS avgScreenBeforeSleep,
+            ROUND(IFNULL(AVG(academic_performance), 0), 2) AS avgAcademicPerformance,
+            ROUND(IFNULL(AVG(physical_activity), 0), 2) AS avgPhysicalActivity,
+            ROUND(IFNULL(AVG(stress_level), 0), 2) AS avgStress,
+            ROUND(IFNULL(AVG(anxiety_level), 0), 2) AS avgAnxiety,
+            ROUND(IFNULL(AVG(addiction_level), 0), 2) AS avgAddiction,
+            SUM(CASE WHEN depression_label = 1 THEN 1 ELSE 0 END) AS riskCount,
+            SUM(CASE WHEN depression_label = 0 THEN 1 ELSE 0 END) AS normalCount,
+            ROUND(SUM(CASE WHEN depression_label = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS riskRate,
+            ROUND(SUM(CASE WHEN daily_social_media_hours &gt;= 4 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS highSocialUseRate,
+            ROUND(SUM(CASE WHEN sleep_hours &lt; 7 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS sleepInsufficientRate,
+            ROUND(SUM(CASE WHEN stress_level &gt;= 7 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS highStressRate,
+            ROUND(SUM(CASE WHEN anxiety_level &gt;= 7 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS highAnxietyRate,
+            ROUND(SUM(CASE WHEN addiction_level &gt;= 7 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS highAddictionRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+    </select>
+
+    <select id="selectDepressionDistribution" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            a.labelName,
+            a.totalCount,
+            ROUND(a.totalCount * 100.0 / NULLIF(b.totalCount, 0), 2) AS ratio,
+            a.avgSocialHours,
+            a.avgSleepHours,
+            a.avgStress,
+            a.avgAnxiety,
+            a.avgAddiction,
+            a.avgAcademicPerformance
+        FROM (
+            SELECT
+                CASE
+                    WHEN depression_label = 1 THEN '存在风险'
+                    WHEN depression_label = 0 THEN '暂无明显风险'
+                    ELSE '未知'
+                END AS labelName,
+                COUNT(1) AS totalCount,
+                ROUND(IFNULL(AVG(daily_social_media_hours), 0), 2) AS avgSocialHours,
+                ROUND(IFNULL(AVG(sleep_hours), 0), 2) AS avgSleepHours,
+                ROUND(IFNULL(AVG(stress_level), 0), 2) AS avgStress,
+                ROUND(IFNULL(AVG(anxiety_level), 0), 2) AS avgAnxiety,
+                ROUND(IFNULL(AVG(addiction_level), 0), 2) AS avgAddiction,
+                ROUND(IFNULL(AVG(academic_performance), 0), 2) AS avgAcademicPerformance
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+            GROUP BY depression_label
+        ) a
+        CROSS JOIN (
+            SELECT COUNT(1) AS totalCount
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) b
+        ORDER BY a.totalCount DESC
+    </select>
+
+    <select id="selectGenderDistribution" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            a.labelName,
+            a.totalCount,
+            ROUND(a.totalCount * 100.0 / NULLIF(b.totalCount, 0), 2) AS ratio,
+            a.riskRate,
+            a.avgSocialHours,
+            a.avgSleepHours
+        FROM (
+            SELECT
+                IFNULL(NULLIF(gender, ''), '未知') AS labelName,
+                COUNT(1) AS totalCount,
+                ROUND(SUM(CASE WHEN depression_label = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS riskRate,
+                ROUND(IFNULL(AVG(daily_social_media_hours), 0), 2) AS avgSocialHours,
+                ROUND(IFNULL(AVG(sleep_hours), 0), 2) AS avgSleepHours
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+            GROUP BY IFNULL(NULLIF(gender, ''), '未知')
+        ) a
+        CROSS JOIN (
+            SELECT COUNT(1) AS totalCount
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) b
+        ORDER BY a.totalCount DESC
+    </select>
+
+    <select id="selectPlatformStats" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            a.labelName,
+            a.totalCount,
+            ROUND(a.totalCount * 100.0 / NULLIF(b.totalCount, 0), 2) AS ratio,
+            a.avgSocialHours,
+            a.avgSleepHours,
+            a.avgScreenBeforeSleep,
+            a.avgAcademicPerformance,
+            a.avgStress,
+            a.avgAnxiety,
+            a.avgAddiction,
+            a.riskRate
+        FROM (
+            SELECT
+                IFNULL(NULLIF(platform_usage, ''), '未知平台') AS labelName,
+                COUNT(1) AS totalCount,
+                ROUND(IFNULL(AVG(daily_social_media_hours), 0), 2) AS avgSocialHours,
+                ROUND(IFNULL(AVG(sleep_hours), 0), 2) AS avgSleepHours,
+                ROUND(IFNULL(AVG(screen_time_before_sleep), 0), 2) AS avgScreenBeforeSleep,
+                ROUND(IFNULL(AVG(academic_performance), 0), 2) AS avgAcademicPerformance,
+                ROUND(IFNULL(AVG(stress_level), 0), 2) AS avgStress,
+                ROUND(IFNULL(AVG(anxiety_level), 0), 2) AS avgAnxiety,
+                ROUND(IFNULL(AVG(addiction_level), 0), 2) AS avgAddiction,
+                ROUND(SUM(CASE WHEN depression_label = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS riskRate
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+            GROUP BY IFNULL(NULLIF(platform_usage, ''), '未知平台')
+        ) a
+        CROSS JOIN (
+            SELECT COUNT(1) AS totalCount
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) b
+        ORDER BY a.totalCount DESC
+        LIMIT 12
+    </select>
+
+    <select id="selectAgeSegmentStats" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            t.segmentKey,
+            t.segmentName,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(t.daily_social_media_hours), 0), 2) AS avgSocialHours,
+            ROUND(IFNULL(AVG(t.sleep_hours), 0), 2) AS avgSleepHours,
+            ROUND(IFNULL(AVG(t.academic_performance), 0), 2) AS avgAcademicPerformance,
+            ROUND(IFNULL(AVG(t.physical_activity), 0), 2) AS avgPhysicalActivity,
+            ROUND(IFNULL(AVG(t.stress_level), 0), 2) AS avgStress,
+            ROUND(IFNULL(AVG(t.anxiety_level), 0), 2) AS avgAnxiety,
+            ROUND(IFNULL(AVG(t.addiction_level), 0), 2) AS avgAddiction,
+            ROUND(SUM(CASE WHEN t.depression_label = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS riskRate
+        FROM (
+            SELECT
+                CASE
+                    WHEN age IS NULL THEN 99
+                    WHEN age &lt;= 12 THEN 1
+                    WHEN age BETWEEN 13 AND 15 THEN 2
+                    WHEN age BETWEEN 16 AND 18 THEN 3
+                    ELSE 4
+                END AS segmentKey,
+                CASE
+                    WHEN age IS NULL THEN '未知年龄'
+                    WHEN age &lt;= 12 THEN '12岁及以下'
+                    WHEN age BETWEEN 13 AND 15 THEN '13-15岁'
+                    WHEN age BETWEEN 16 AND 18 THEN '16-18岁'
+                    ELSE '19岁及以上'
+                END AS segmentName,
+                daily_social_media_hours,
+                sleep_hours,
+                academic_performance,
+                physical_activity,
+                stress_level,
+                anxiety_level,
+                addiction_level,
+                depression_label
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY t.segmentKey, t.segmentName
+        ORDER BY t.segmentKey ASC
+    </select>
+
+    <select id="selectSocialMediaSegmentStats" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            t.segmentKey,
+            t.segmentName,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(t.daily_social_media_hours), 0), 2) AS avgSocialHours,
+            ROUND(IFNULL(AVG(t.sleep_hours), 0), 2) AS avgSleepHours,
+            ROUND(IFNULL(AVG(t.screen_time_before_sleep), 0), 2) AS avgScreenBeforeSleep,
+            ROUND(IFNULL(AVG(t.academic_performance), 0), 2) AS avgAcademicPerformance,
+            ROUND(IFNULL(AVG(t.stress_level), 0), 2) AS avgStress,
+            ROUND(IFNULL(AVG(t.anxiety_level), 0), 2) AS avgAnxiety,
+            ROUND(IFNULL(AVG(t.addiction_level), 0), 2) AS avgAddiction,
+            ROUND(SUM(CASE WHEN t.depression_label = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS riskRate
+        FROM (
+            SELECT
+                CASE
+                    WHEN daily_social_media_hours IS NULL THEN 99
+                    WHEN daily_social_media_hours &lt;= 1 THEN 1
+                    WHEN daily_social_media_hours &lt;= 3 THEN 2
+                    WHEN daily_social_media_hours &lt;= 5 THEN 3
+                    ELSE 4
+                END AS segmentKey,
+                CASE
+                    WHEN daily_social_media_hours IS NULL THEN '未知'
+                    WHEN daily_social_media_hours &lt;= 1 THEN '1小时及以下'
+                    WHEN daily_social_media_hours &lt;= 3 THEN '1-3小时'
+                    WHEN daily_social_media_hours &lt;= 5 THEN '3-5小时'
+                    ELSE '5小时以上'
+                END AS segmentName,
+                daily_social_media_hours,
+                sleep_hours,
+                screen_time_before_sleep,
+                academic_performance,
+                stress_level,
+                anxiety_level,
+                addiction_level,
+                depression_label
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY t.segmentKey, t.segmentName
+        ORDER BY t.segmentKey ASC
+    </select>
+
+    <select id="selectSleepSegmentStats" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            t.segmentKey,
+            t.segmentName,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(t.sleep_hours), 0), 2) AS avgSleepHours,
+            ROUND(IFNULL(AVG(t.daily_social_media_hours), 0), 2) AS avgSocialHours,
+            ROUND(IFNULL(AVG(t.screen_time_before_sleep), 0), 2) AS avgScreenBeforeSleep,
+            ROUND(IFNULL(AVG(t.academic_performance), 0), 2) AS avgAcademicPerformance,
+            ROUND(IFNULL(AVG(t.physical_activity), 0), 2) AS avgPhysicalActivity,
+            ROUND(IFNULL(AVG(t.stress_level), 0), 2) AS avgStress,
+            ROUND(IFNULL(AVG(t.anxiety_level), 0), 2) AS avgAnxiety,
+            ROUND(SUM(CASE WHEN t.depression_label = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS riskRate
+        FROM (
+            SELECT
+                CASE
+                    WHEN sleep_hours IS NULL THEN 99
+                    WHEN sleep_hours &lt; 6 THEN 1
+                    WHEN sleep_hours &lt; 7 THEN 2
+                    WHEN sleep_hours &lt; 8 THEN 3
+                    ELSE 4
+                END AS segmentKey,
+                CASE
+                    WHEN sleep_hours IS NULL THEN '未知'
+                    WHEN sleep_hours &lt; 6 THEN '少于6小时'
+                    WHEN sleep_hours &lt; 7 THEN '6-7小时'
+                    WHEN sleep_hours &lt; 8 THEN '7-8小时'
+                    ELSE '8小时及以上'
+                END AS segmentName,
+                sleep_hours,
+                daily_social_media_hours,
+                screen_time_before_sleep,
+                academic_performance,
+                physical_activity,
+                stress_level,
+                anxiety_level,
+                depression_label
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        GROUP BY t.segmentKey, t.segmentName
+        ORDER BY t.segmentKey ASC
+    </select>
+
+    <select id="selectSocialInteractionStats" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(social_interaction_level, ''), '未知') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(daily_social_media_hours), 0), 2) AS avgSocialHours,
+            ROUND(IFNULL(AVG(sleep_hours), 0), 2) AS avgSleepHours,
+            ROUND(IFNULL(AVG(physical_activity), 0), 2) AS avgPhysicalActivity,
+            ROUND(IFNULL(AVG(academic_performance), 0), 2) AS avgAcademicPerformance,
+            ROUND(IFNULL(AVG(stress_level), 0), 2) AS avgStress,
+            ROUND(IFNULL(AVG(anxiety_level), 0), 2) AS avgAnxiety,
+            ROUND(IFNULL(AVG(addiction_level), 0), 2) AS avgAddiction,
+            ROUND(SUM(CASE WHEN depression_label = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS riskRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(social_interaction_level, ''), '未知')
+        ORDER BY totalCount DESC
+    </select>
+
+    <select id="selectMentalRadarByRisk" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            CASE
+                WHEN depression_label = 1 THEN '存在风险'
+                WHEN depression_label = 0 THEN '暂无明显风险'
+                ELSE '未知'
+            END AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(LEAST(10, IFNULL(AVG(daily_social_media_hours), 0)), 2) AS socialMediaHours,
+            ROUND(LEAST(10, IFNULL(AVG(screen_time_before_sleep), 0) * 1.5), 2) AS screenBeforeSleep,
+            ROUND(LEAST(10, IFNULL(AVG(stress_level), 0)), 2) AS stressLevel,
+            ROUND(LEAST(10, IFNULL(AVG(anxiety_level), 0)), 2) AS anxietyLevel,
+            ROUND(LEAST(10, IFNULL(AVG(addiction_level), 0)), 2) AS addictionLevel,
+            ROUND(CASE WHEN IFNULL(AVG(academic_performance), 0) &gt; 10 THEN LEAST(10, IFNULL(AVG(academic_performance), 0) / 10) ELSE LEAST(10, IFNULL(AVG(academic_performance), 0)) END, 2) AS academicPerformanceScore,
+            ROUND(LEAST(10, IFNULL(AVG(physical_activity), 0)), 2) AS physicalActivityScore,
+            ROUND(LEAST(10, IFNULL(AVG(sleep_hours), 0)), 2) AS sleepHoursScore
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY depression_label
+        ORDER BY totalCount DESC
+    </select>
+
+    <select id="selectPlatformRadarStats" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(platform_usage, ''), '未知平台') AS labelName,
+            COUNT(1) AS totalCount,
+            ROUND(LEAST(10, IFNULL(AVG(daily_social_media_hours), 0)), 2) AS socialMediaHours,
+            ROUND(LEAST(10, IFNULL(AVG(screen_time_before_sleep), 0) * 1.5), 2) AS screenBeforeSleep,
+            ROUND(LEAST(10, IFNULL(AVG(stress_level), 0)), 2) AS stressLevel,
+            ROUND(LEAST(10, IFNULL(AVG(anxiety_level), 0)), 2) AS anxietyLevel,
+            ROUND(LEAST(10, IFNULL(AVG(addiction_level), 0)), 2) AS addictionLevel,
+            ROUND(LEAST(10, IFNULL(AVG(sleep_hours), 0)), 2) AS sleepHoursScore,
+            ROUND(SUM(CASE WHEN depression_label = 1 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0), 2) AS riskRate
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(platform_usage, ''), '未知平台')
+        ORDER BY totalCount DESC
+        LIMIT 5
+    </select>
+
+    <select id="selectSocialAnxietyScatter" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            t.id,
+            t.daily_social_media_hours AS socialHours,
+            t.anxiety_level AS anxietyLevel,
+            t.stress_level AS stressLevel,
+            t.addiction_level AS addictionLevel,
+            t.sleep_hours AS sleepHours,
+            t.depression_label AS depressionLabel,
+            IFNULL(NULLIF(t.platform_usage, ''), '未知平台') AS platformName
+        FROM (
+            SELECT id, daily_social_media_hours, anxiety_level, stress_level, addiction_level, sleep_hours, depression_label, platform_usage
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        WHERE t.daily_social_media_hours IS NOT NULL
+          AND t.anxiety_level IS NOT NULL
+        ORDER BY t.id DESC
+        LIMIT 500
+    </select>
+
+    <select id="selectScreenSleepScatter" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            t.id,
+            t.screen_time_before_sleep AS screenBeforeSleep,
+            t.sleep_hours AS sleepHours,
+            t.stress_level AS stressLevel,
+            t.depression_label AS depressionLabel,
+            IFNULL(NULLIF(t.platform_usage, ''), '未知平台') AS platformName
+        FROM (
+            SELECT id, screen_time_before_sleep, sleep_hours, stress_level, depression_label, platform_usage
+            FROM
+            <include refid="TableName"/>
+            <include refid="WhereSql"/>
+        ) t
+        WHERE t.screen_time_before_sleep IS NOT NULL
+          AND t.sleep_hours IS NOT NULL
+        ORDER BY t.id DESC
+        LIMIT 500
+    </select>
+
+    <select id="selectPlatformRiskHeatmap" parameterType="org.example.base_project.entity.TeenMentalHealthQuery" resultType="map">
+        SELECT
+            IFNULL(NULLIF(platform_usage, ''), '未知平台') AS platformName,
+            CASE
+                WHEN depression_label = 1 THEN '存在风险'
+                WHEN depression_label = 0 THEN '暂无明显风险'
+                ELSE '未知'
+            END AS riskName,
+            COUNT(1) AS totalCount,
+            ROUND(IFNULL(AVG(stress_level), 0), 2) AS avgStress,
+            ROUND(IFNULL(AVG(anxiety_level), 0), 2) AS avgAnxiety
+        FROM
+        <include refid="TableName"/>
+        <include refid="WhereSql"/>
+        GROUP BY IFNULL(NULLIF(platform_usage, ''), '未知平台'), depression_label
+        ORDER BY platformName ASC, riskName ASC
+    </select>
+
+</mapper>
